@@ -17,6 +17,7 @@ jobs:
         with:
           channel: 'dev'
 
+      - run: echo ${{ secrets.GOOGLE_SERVICE_INFO }} | base64 -d > ./ios/Runner/GoogleService-Info.plist
       - run: flutter pub get
       - run: flutter build web
 
@@ -28,6 +29,7 @@ jobs:
 
   deployer:
     name: Web Deployer
+    needs: builder
     runs-on: ubuntu-latest
     steps:
       - name: Check out code
@@ -44,5 +46,5 @@ jobs:
         with:
           args: deploy --only hosting
         env:
-          PROJECT_ID: ${{ secrets.PROJECT_ID }}
+          PROJECT_ID: taketkafe
           FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
