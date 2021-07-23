@@ -50,7 +50,6 @@ class _LoginBodyState extends State<LoginBody> {
           Navigator.of(context).pop();
           break;
         case EventFailed:
-          Navigator.of(context).pushReplacementNamed("/login");
           break;
       }
     });

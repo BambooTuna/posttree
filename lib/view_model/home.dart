@@ -18,8 +18,6 @@ class HomeViewModel extends ChangeNotifier {
 
   void setUser(User? user) {
     this._user = user;
-    print("setUser");
-    print(user);
     notifyListeners();
   }
 }
