@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:posttree/style/colors.dart';
+import 'package:posttree/ui/user_page.dart';
 import 'package:posttree/view_model/authenticate.dart';
 import 'package:posttree/view_model/home.dart';
+import 'package:posttree/widget/user_icon.dart';
 import 'package:provider/provider.dart';
 
 class Home extends StatelessWidget {
@@ -32,8 +33,6 @@ class UserSmallIcon extends StatefulWidget {
 }
 
 class _UserSmallIconState extends State<UserSmallIcon> {
-  static const iconSize = 48.0;
-
   @override
   void initState() {
     super.initState();
@@ -42,42 +41,30 @@ class _UserSmallIconState extends State<UserSmallIcon> {
   @override
   Widget build(BuildContext context) {
     var viewModel = Provider.of<HomeViewModel>(context);
-    final userIconImage = viewModel.user.userIconImage;
-    final icon = userIconImage == null
-        ? Icon(IconData(0xee41, fontFamily: 'MaterialIcons'))
-        : Image.network(
-            userIconImage.value,
-            fit: BoxFit.cover,
-          );
-
-    return Container(
-      width: iconSize,
-      height: iconSize,
-      margin: EdgeInsets.fromLTRB(4, 4, 4, 4),
-      decoration: BoxDecoration(
-        color: Theme.of(context).cardColor,
-        border: Border.all(color: Theme.of(context).cardColor, width: 1.5),
-        borderRadius: BorderRadius.circular(20),
-      ),
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(24),
-        child: InkWell(
-            onTap: () {
-              if (viewModel.isLogin) {
-                showDialog(
-                    context: context,
-                    builder: (context) {
-                      return AlertDialog(
-                        title: Text("Unimplemented: ユーザーページに飛ぶ"),
-                      );
-                    });
-              } else {
-                Navigator.of(context).pushNamed("/login");
-              }
-            },
-            child: icon),
-      ),
-    );
+    if (viewModel.isLogin) {
+      final icon = viewModel.user.userIconImage == null
+          ? Icon(IconData(0xee41, fontFamily: 'MaterialIcons'))
+          : Image.network(
+              viewModel.user.userIconImage!.value,
+              fit: BoxFit.cover,
+            );
+      return UserIcon(
+        iconSize: 48.0,
+        onTap: () {
+          Navigator.of(context).pushNamed("/profile",
+              arguments: UserPageArguments(viewModel.user.userId.id));
+        },
+        child: icon,
+      );
+    } else {
+      return UserIcon(
+        iconSize: 48.0,
+        onTap: () {
+          Navigator.of(context).pushNamed("/login");
+        },
+        child: Icon(IconData(0xee41, fontFamily: 'MaterialIcons')),
+      );
+    }
   }
 }
 
@@ -122,7 +109,7 @@ class _HomeBodyState extends State<HomeBody> {
     authenticateViewModel.authenticateSuccessAction.stream.listen((user) {
       viewModel.setUser(user);
     });
-    authenticateViewModel.signOut();
+    // authenticateViewModel.signOut();
     authenticateViewModel.authenticate();
   }
 

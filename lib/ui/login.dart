@@ -22,7 +22,7 @@ class Login extends StatelessWidget {
       child: Scaffold(
         appBar: AppBar(
             title: Text(
-          loginViewTitle,
+          viewTitle,
           style: Theme.of(context).primaryTextTheme.headline4,
         )),
         body: LoginBody(),
@@ -84,14 +84,12 @@ class _LoginButton extends StatelessWidget {
             child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: <Widget>[
-                  SignInButton(
-                    Buttons.Google,
-                    text: signInWithGoogle,
-                    onPressed: _onPressed(viewModel),
-                  ),
-                ]
-            )
-        );
+              SignInButton(
+                Buttons.Google,
+                text: signInWithGoogle,
+                onPressed: _onPressed(viewModel),
+              ),
+            ]));
       },
     );
   }

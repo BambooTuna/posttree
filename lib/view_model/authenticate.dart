@@ -4,10 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:posttree/model/account.dart';
 import 'package:posttree/model/user.dart';
 import 'package:posttree/repository/account.dart';
-import 'package:posttree/utils/state.dart';
-import 'package:posttree/utils/event.dart';
 import 'package:posttree/utils/logger.dart';
-import 'package:provider/provider.dart';
 
 // ユーザーの認証と
 class AuthenticateViewModel extends ChangeNotifier {
