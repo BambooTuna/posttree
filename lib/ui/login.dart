@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
+import 'package:flutter_signin_button/button_list.dart';
+import 'package:flutter_signin_button/button_view.dart';
 import 'package:posttree/const/login.dart';
-import 'package:posttree/repository/account.dart';
 import 'package:posttree/utils/event.dart';
-import 'package:posttree/utils/logger.dart';
 import 'package:posttree/view_model/authenticate.dart';
 import 'package:posttree/view_model/login.dart';
 import 'package:provider/provider.dart';
@@ -26,6 +27,7 @@ class Login extends StatelessWidget {
         )),
         body: LoginBody(),
       ),
+      builder: EasyLoading.init(),
     );
   }
 }
@@ -42,6 +44,7 @@ class _LoginBodyState extends State<LoginBody> {
 
     var viewModel = Provider.of<LoginViewModel>(context, listen: false);
     viewModel.loginSuccessAction.stream.listen((event) {
+      EasyLoading.dismiss();
       switch (event.runtimeType) {
         case EventSuccess:
           Navigator.of(context).pop();
@@ -62,15 +65,13 @@ class _LoginBodyState extends State<LoginBody> {
 }
 
 class _LoginButton extends StatelessWidget {
-  String _getButtonText(LoginViewModel viewModel) =>
-      viewModel.isLogging ? loggingButtonText : loginButtonText;
-
-  VoidCallback? _onPressed(LoginViewModel viewModel) {
+  VoidCallback _onPressed(LoginViewModel viewModel) {
     if (viewModel.isLogging) {
-      return null;
+      return () {};
     } else {
       return () {
         viewModel.login();
+        EasyLoading.show(status: loadingText);
       };
     }
   }
@@ -79,12 +80,17 @@ class _LoginButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return Consumer<LoginViewModel>(
       builder: (context, viewModel, _) {
-        return ElevatedButton(
-          child: Text(
-            _getButtonText(viewModel),
-            style: Theme.of(context).primaryTextTheme.button,
-          ),
-          onPressed: _onPressed(viewModel),
+        return Center(
+            child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: <Widget>[
+                  SignInButton(
+                    Buttons.Google,
+                    text: signInWithGoogle,
+                    onPressed: _onPressed(viewModel),
+                  ),
+                ]
+            )
         );
       },
     );

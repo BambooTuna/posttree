@@ -1,3 +1,3 @@
 const loginViewTitle = "Login";
-const loginButtonText = "Login";
-const loggingButtonText = "Wait...";
+const signInWithGoogle = "Googleでログイン";
+const loadingText = "処理中";
