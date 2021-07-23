@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:posttree/view_model/authenticate.dart';
 import 'package:provider/provider.dart';
 
-class UserSettingDrawer extends StatelessWidget {
+class UserSettingWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Consumer<AuthenticateViewModel>(

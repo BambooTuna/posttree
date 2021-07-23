@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:posttree/ui/user_page.dart';
 import 'package:posttree/view_model/authenticate.dart';
 import 'package:posttree/view_model/home.dart';
+import 'package:posttree/view_model/post_tables.dart';
+import 'package:posttree/widget/post_tables.dart';
 import 'package:posttree/widget/user_icon.dart';
 import 'package:provider/provider.dart';
 
@@ -12,14 +14,17 @@ class Home extends StatelessWidget {
     return MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (_) => HomeViewModel()),
+        ChangeNotifierProvider(create: (_) => PostTableViewModel()),
       ],
       child: Scaffold(
+        backgroundColor: Theme.of(context).scaffoldBackgroundColor,
         appBar: AppBar(
           title: Text(
             "Home",
-            style: Theme.of(context).primaryTextTheme.headline4,
+            style: Theme.of(context).appBarTheme.titleTextStyle,
           ),
           leading: UserSmallIcon(),
+          backgroundColor: Theme.of(context).appBarTheme.backgroundColor,
         ),
         body: HomeBody(),
         floatingActionButton: _HomeFloatingActionButton(),
@@ -43,30 +48,24 @@ class _UserSmallIconState extends State<UserSmallIcon> {
   Widget build(BuildContext context) {
     var viewModel = Provider.of<HomeViewModel>(context);
     if (viewModel.isLogin) {
-      final icon = viewModel.user.userIconImage == null
-          ? Icon(Icons.supervisor_account)
-          : CachedNetworkImage(
-              imageUrl: viewModel.user.userIconImage!.value,
-              placeholder: (context, url) => CircularProgressIndicator(),
-              errorWidget: (context, url, error) => Icon(Icons.error),
-            );
-      return UserIcon(
+      final iconUrl = viewModel.user.userIconImage.value;
+      return UserIconWidget(
         iconSize: 48.0,
         radius: 20,
         onTap: () {
           Navigator.of(context).pushNamed("/profile",
               arguments: UserPageArguments(viewModel.user.userId.id));
         },
-        child: icon,
+        iconUrl: iconUrl,
       );
     } else {
-      return UserIcon(
+      return UserIconWidget(
         iconSize: 48.0,
         radius: 20,
         onTap: () {
           Navigator.of(context).pushNamed("/login");
         },
-        child: Icon(IconData(0xee41, fontFamily: 'MaterialIcons')),
+        iconUrl: "https://example.com",
       );
     }
   }
@@ -119,24 +118,6 @@ class _HomeBodyState extends State<HomeBody> {
 
   @override
   Widget build(BuildContext context) {
-    return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: <Widget>[
-          Text(
-            'You have pushed the button this many times:',
-            style: Theme.of(context).textTheme.subtitle1,
-          ),
-          Text(
-            Provider.of<HomeViewModel>(context).counter.toString(),
-            style: Theme.of(context).textTheme.bodyText1,
-          ),
-          Text(
-            Provider.of<HomeViewModel>(context).user.userName.value,
-            style: Theme.of(context).textTheme.bodyText1,
-          ),
-        ],
-      ),
-    );
+    return PostTable();
   }
 }

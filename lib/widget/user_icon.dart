@@ -1,18 +1,22 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
-class UserIcon extends StatelessWidget {
+class UserIconWidget extends StatelessWidget {
   final double iconSize;
   final double radius;
   final Function()? onTap;
-  final Widget? child;
-  UserIcon(
-      {required this.iconSize, required this.radius, this.onTap, this.child});
+  final String iconUrl;
+  UserIconWidget(
+      {required this.iconSize,
+      required this.radius,
+      this.onTap,
+      required this.iconUrl});
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: onTap,
+      onTap: this.onTap,
       child: Container(
         width: this.iconSize,
         height: this.iconSize,
@@ -23,7 +27,11 @@ class UserIcon extends StatelessWidget {
         ),
         child: ClipRRect(
           borderRadius: BorderRadius.circular(this.radius),
-          child: this.child,
+          child: CachedNetworkImage(
+            imageUrl: this.iconUrl,
+            placeholder: (context, url) => CircularProgressIndicator(),
+            errorWidget: (context, url, error) => Icon(Icons.error),
+          ),
         ),
       ),
     );

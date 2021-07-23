@@ -21,6 +21,9 @@ class UserIconImage {
 class User {
   final UserId userId;
   final UserName userName;
-  final UserIconImage? userIconImage;
-  User({required this.userId, required this.userName, this.userIconImage});
+  final UserIconImage userIconImage;
+  User(
+      {required this.userId,
+      required this.userName,
+      required this.userIconImage});
 }

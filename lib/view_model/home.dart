@@ -8,7 +8,12 @@ class HomeViewModel extends ChangeNotifier {
   User? _user;
   User get user => _user != null
       ? _user!
-      : User(userId: UserId(id: "guest"), userName: UserName(value: "アレクサ"));
+      : User(
+          userId: UserId(id: "guest"),
+          userName: UserName(value: "アレクサ"),
+          userIconImage: UserIconImage(
+              value:
+                  "https://pbs.twimg.com/profile_images/1138564670325792769/lN3Ggmem_400x400.jpg"));
   bool get isLogin => _user != null;
 
   void incrementCounter() {

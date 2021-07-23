@@ -27,14 +27,25 @@ class UserPage extends StatelessWidget {
       ],
       child: Scaffold(
         appBar: AppBar(
-          title: Text(userId.id),
-          // backgroundColor: Colors.white.withOpacity(0.0),
-          // elevation: 0.0,
-        ),
-
+            title: Text(userId.id),
+            // backgroundColor: Colors.white.withOpacity(0.0),
+            // elevation: 0.0,
+            leading: Builder(
+              builder: (BuildContext context) {
+                final ScaffoldState? scaffold = Scaffold.maybeOf(context);
+                final ModalRoute<Object?>? parentRoute = ModalRoute.of(context);
+                final bool hasEndDrawer = scaffold?.hasEndDrawer ?? false;
+                final bool canPop = parentRoute?.canPop ?? false;
+                if (hasEndDrawer && canPop) {
+                  return BackButton();
+                } else {
+                  return SizedBox.shrink();
+                }
+              },
+            )),
         // extendBodyBehindAppBar: true,
         body: UserPageBody(),
-        endDrawer: UserSettingDrawer(),
+        endDrawer: UserSettingWidget(),
         // backgroundColor: Theme.of(context).backgroundColor,
       ),
       builder: EasyLoading.init(),
@@ -74,45 +85,13 @@ class _UserPageBodyState extends State<UserPageBody> {
         if (viewModel.user == null) {
           return Container();
         } else {
-          final icon = viewModel.user!.userIconImage == null
-              ? Icon(Icons.supervisor_account)
-              : CachedNetworkImage(
-                  imageUrl: viewModel.user!.userIconImage!.value,
-                  placeholder: (context, url) => CircularProgressIndicator(),
-                  errorWidget: (context, url, error) => Icon(Icons.error),
-                );
-
-          SingleChildScrollView(
-              child: ListView(children: <Widget>[
-            UserIcon(
-              iconSize: 240.0,
-              radius: 120,
-              onTap: () {},
-              child: icon,
-            ),
-            for (final location in locations)
-              Padding(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
-                child: AspectRatio(
-                  aspectRatio: 16 / 9,
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.circular(16),
-                    child: Stack(
-                      children: [],
-                    ),
-                  ),
-                ),
-              ),
-          ]));
-
           return SingleChildScrollView(
               child: Column(children: <Widget>[
-            UserIcon(
+            UserIconWidget(
               iconSize: 240.0,
               radius: 120,
               onTap: () {},
-              child: icon,
+              iconUrl: viewModel.user!.userIconImage.value,
             ),
             for (final location in locations)
               Padding(
