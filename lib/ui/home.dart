@@ -65,7 +65,7 @@ class _UserSmallIconState extends State<UserSmallIcon> {
         onTap: () {
           Navigator.of(context).pushNamed("/login");
         },
-        iconUrl: "https://example.com",
+        iconUrl: "https://cdn.pixabay.com/photo/2013/07/12/19/24/anonymous-154716_1280.png",
       );
     }
   }
@@ -77,17 +77,43 @@ class _HomeFloatingActionButton extends StatelessWidget {
     return FloatingActionButton(
       onPressed: () {
         final viewModel = Provider.of<HomeViewModel>(context, listen: false);
-        if (viewModel.isLogin) {
-          viewModel.incrementCounter();
-        } else {
-          showDialog(
-              context: context,
-              builder: (context) {
-                return AlertDialog(
-                  title: Text("カウンターを使いたいならログインしてちょ"),
-                );
-              }).then((_) => Navigator.of(context).pushNamed("/login"));
-        }
+        showModalBottomSheet<void>(
+          context: context,
+          // isScrollControlled: true,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.vertical(top: Radius.circular(15)),
+            ),
+            backgroundColor: Theme.of(context).backgroundColor,
+          builder: (BuildContext context) {
+            return Container(
+              height: 400,
+              child: Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  mainAxisSize: MainAxisSize.min,
+                  children: <Widget>[
+                    const Text('Modal BottomSheet'),
+                    ElevatedButton(
+                      child: const Text('Close BottomSheet'),
+                      onPressed: () => Navigator.pop(context),
+                    )
+                  ],
+                ),
+              ),
+            );
+          },
+        );
+        // if (viewModel.isLogin) {
+        //   viewModel.incrementCounter();
+        // } else {
+        //   showDialog(
+        //       context: context,
+        //       builder: (context) {
+        //         return AlertDialog(
+        //           title: Text("カウンターを使いたいならログインしてちょ"),
+        //         );
+        //       }).then((_) => Navigator.of(context).pushNamed("/login"));
+        // }
       },
       tooltip: 'Increment',
       child: Icon(Icons.add),

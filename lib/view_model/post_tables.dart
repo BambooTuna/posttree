@@ -1,12 +1,13 @@
 import 'package:flutter/cupertino.dart';
 import 'package:posttree/model/post.dart';
 import 'package:posttree/model/user.dart';
+import 'package:posttree/utils/random.dart';
 
 class PostTableViewModel extends ChangeNotifier {
   List<Post> _items = [
     Post(
         message:
-            "messagemessagemessagemessagemessagemessagemessagemessagemessagemessagemessagemessagemessagemessagemessagemessagemessagemessagemessagemessagemessagemessagemessagemessagemessagemessagemessagemessagemessagemessagemessagemessagemessage",
+        randomString(100),
         user: User(
             userId: UserId(id: "userId"),
             userName: UserName(value: "userName"),
@@ -22,42 +23,43 @@ class PostTableViewModel extends ChangeNotifier {
             userIconImage: UserIconImage(
                 value:
                     "https://pbs.twimg.com/profile_images/1138564670325792769/lN3Ggmem_400x400.jpg")),
-        isMine: true),
-    Post(
-        message:
-            "messagemessagemessagemessagemessagemessagemessagemessagemessagemessagemessagemessagemessagemessagemessagemessagemessagemessagemessagemessagemessagemessagemessagemessagemessagemessagemessagemessagemessagemessagemessagemessagemessage",
-        user: User(
-            userId: UserId(id: "userId2"),
-            userName: UserName(value: "><"),
-            userIconImage: UserIconImage(
-                value:
-                    "https://pbs.twimg.com/profile_images/1138564670325792769/lN3Ggmem_400x400.jpg")),
-        isMine: false),
-    Post(
-        message:
-            "messagemessagemessagemessagemessagemessagemessagemessagemessagemessagemessagemessagemessagemessagemessagemessagemessagemessagemessagemessagemessagemessagemessagemessagemessagemessagemessagemessagemessagemessagemessagemessagemessage",
-        user: User(
-            userId: UserId(id: "userId"),
-            userName: UserName(value: "アレクサ"),
-            userIconImage: UserIconImage(
-                value:
-                    "https://pbs.twimg.com/profile_images/1138564670325792769/lN3Ggmem_400x400.jpg")),
-        isMine: false),
-    Post(
-        message:
-            "messagemessagemessagemessagemessagemessagemessagemessagemessagemessagemessagemessagemessagemessagemessagemessagemessagemessagemessagemessagemessagemessagemessagemessagemessagemessagemessagemessagemessagemessagemessagemessagemessage",
-        user: User(
-            userId: UserId(id: "userId"),
-            userName: UserName(value: "山田"),
-            userIconImage: UserIconImage(
-                value:
-                    "https://pbs.twimg.com/profile_images/1138564670325792769/lN3Ggmem_400x400.jpg")),
-        isMine: false)
+        isMine: true)
   ];
   List<Post> get items => _items;
 
+  bool _editMode = false;
+  bool get editMode => _editMode;
+
+  void toEditMode() {
+    if (this.editMode) {
+      return;
+    }
+    this._editMode = true;
+    notifyListeners();
+  }
+
+  void toNormalMode() {
+    if (!this.editMode) {
+      return;
+    }
+    this._editMode = false;
+    notifyListeners();
+  }
+
   Future<void> reload() async {
+    this._items.insert(0, Post(
+        message:
+        randomString(50),
+        user: User(
+            userId: UserId(id: randomString(10)),
+            userName: UserName(value: randomString(5)),
+            userIconImage: UserIconImage(
+                value:
+                "https://pbs.twimg.com/profile_images/1138564670325792769/lN3Ggmem_400x400.jpg")),
+        isMine: false));
+    
     await Future.delayed(Duration(seconds: 1));
+    notifyListeners();
   }
 
   @override
