@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:posttree/ui/user_page.dart';
 import 'package:posttree/view_model/authenticate.dart';
@@ -43,13 +44,15 @@ class _UserSmallIconState extends State<UserSmallIcon> {
     var viewModel = Provider.of<HomeViewModel>(context);
     if (viewModel.isLogin) {
       final icon = viewModel.user.userIconImage == null
-          ? Icon(IconData(0xee41, fontFamily: 'MaterialIcons'))
-          : Image.network(
-              viewModel.user.userIconImage!.value,
-              fit: BoxFit.cover,
+          ? Icon(Icons.supervisor_account)
+          : CachedNetworkImage(
+              imageUrl: viewModel.user.userIconImage!.value,
+              placeholder: (context, url) => CircularProgressIndicator(),
+              errorWidget: (context, url, error) => Icon(Icons.error),
             );
       return UserIcon(
         iconSize: 48.0,
+        radius: 20,
         onTap: () {
           Navigator.of(context).pushNamed("/profile",
               arguments: UserPageArguments(viewModel.user.userId.id));
@@ -59,6 +62,7 @@ class _UserSmallIconState extends State<UserSmallIcon> {
     } else {
       return UserIcon(
         iconSize: 48.0,
+        radius: 20,
         onTap: () {
           Navigator.of(context).pushNamed("/login");
         },

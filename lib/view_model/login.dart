@@ -24,8 +24,8 @@ class LoginViewModel extends ChangeNotifier {
     try {
       await authenticateViewModel.signIn();
       _loginSuccessAction.sink.add(EventSuccess());
-    } on Exception catch (e) {
-      logger.warning('Other Exception');
+    } catch (e) {
+      logger.warning('Exception');
       logger.warning('${e.toString()}');
       _loginSuccessAction.sink.add(EventFailed());
     } finally {

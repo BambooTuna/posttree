@@ -32,8 +32,8 @@ class AuthenticateViewModel extends ChangeNotifier {
               value:
                   "https://pbs.twimg.com/profile_images/1138564670325792769/lN3Ggmem_400x400.jpg"));
       _authenticateSuccessAction.sink.add(user);
-    } on Exception catch (e) {
-      logger.warning('Other Exception');
+    } catch (e) {
+      logger.warning('Exception');
       logger.warning('${e.toString()}');
       _authenticateSuccessAction.sink.add(null);
     } finally {
