@@ -1,0 +1,48 @@
+name: Web Deploy
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  builder:
+    name: Web Builder
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v2
+
+      - name: Build
+        uses: subosito/flutter-action@v1
+        with:
+          channel: 'dev'
+
+      - run: flutter pub get
+      - run: flutter build web
+
+      - name: Archive Production Artifact
+        uses: actions/upload-artifact@master
+        with:
+          name: web
+          path: build/web
+
+  deployer:
+    name: Web Deployer
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v2
+
+      - name: Download Artifact
+        uses: actions/download-artifact@master
+        with:
+          name: web
+          path: build/web
+
+      - name: Deploy to Firebase
+        uses: w9jds/firebase-action@master
+        with:
+          args: deploy --only hosting
+        env:
+          PROJECT_ID: ${{ secrets.PROJECT_ID }}
+          FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
