@@ -4,6 +4,7 @@ import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:posttree/const/user_page.dart';
 import 'package:posttree/model/user.dart';
 import 'package:posttree/utils/event.dart';
+import 'package:posttree/view_model/post_tables.dart';
 import 'package:posttree/view_model/user_page.dart';
 import 'package:posttree/widget/post_card.dart';
 import 'package:posttree/widget/refreshable_post_table.dart';
@@ -27,6 +28,8 @@ class UserPage extends StatelessWidget {
       providers: [
         ChangeNotifierProvider(
             create: (context) => UserPageViewModel(userId: userId)),
+        ChangeNotifierProvider(
+            create: (context) => UserPostTableViewModel(userId: userId)),
       ],
       child: Scaffold(
         appBar: AppBar(
@@ -68,8 +71,9 @@ class _UserPageBodyState extends State<UserPageBody> {
     super.initState();
 
     EasyLoading.show(status: loadingText);
-    var viewModel = Provider.of<UserPageViewModel>(context, listen: false);
-    viewModel.eventAction.stream.listen((event) {
+    var userPageViewModel =
+        Provider.of<UserPageViewModel>(context, listen: false);
+    userPageViewModel.eventAction.stream.listen((event) {
       EasyLoading.dismiss();
       switch (event.runtimeType) {
         case EventSuccess:
@@ -79,47 +83,54 @@ class _UserPageBodyState extends State<UserPageBody> {
           break;
       }
     });
-    viewModel.reload();
+    userPageViewModel.reload();
+
+    var userPostTableViewModel =
+        Provider.of<UserPostTableViewModel>(context, listen: false);
+    userPostTableViewModel.reload();
   }
 
   @override
   Widget build(BuildContext context) {
-    return Consumer<UserPageViewModel>(
-      builder: (context, viewModel, _) {
-        var user = viewModel.user ?? defaultUser();
-        return Column(children: [
-          UserIconWidget(
-            iconSize: 200.0,
-            radius: 80,
-            onTap: () {},
-            iconUrl: user.userIconImage.value,
+    var userPageViewModel = Provider.of<UserPageViewModel>(context);
+    var userPostTableViewModel = Provider.of<UserPostTableViewModel>(context);
+
+    var user = userPageViewModel.user ?? defaultUser();
+    return Column(children: [
+      UserIconWidget(
+        iconSize: 200.0,
+        radius: 80,
+        onTap: () {},
+        iconUrl: user.userIconImage.value,
+      ),
+      Expanded(
+          child: TabBarWidget(tabs: [
+        Tab(
+          icon: Icon(
+            Icons.paste,
+            color: Theme.of(context).iconTheme.color,
           ),
-          Expanded(
-              child: TabBarWidget(tabs: [
-            Tab(
-              icon: Icon(
-                Icons.paste,
-                color: Theme.of(context).iconTheme.color,
-              ),
-            ),
-            Tab(
-              icon: Icon(
-                Icons.edit,
-                color: Theme.of(context).iconTheme.color,
-              ),
-            )
-          ], children: [
-            RefreshableItemTable(
-              items: viewModel.items.map((e) => PostCard(item: e)).toList(),
-              onRefresh: viewModel.reload,
-            ),
-            RefreshableItemTable(
-              items: viewModel.items.map((e) => PostCard(item: e)).toList(),
-              onRefresh: viewModel.reload,
-            )
-          ]))
-        ]);
-      },
-    );
+        ),
+        Tab(
+          icon: Icon(
+            Icons.edit,
+            color: Theme.of(context).iconTheme.color,
+          ),
+        )
+      ], children: [
+        RefreshableItemTable(
+          items: userPostTableViewModel.items
+              .map((e) => PostCard(item: e))
+              .toList(),
+          onRefresh: userPostTableViewModel.reload,
+        ),
+        RefreshableItemTable(
+          items: userPostTableViewModel.items
+              .map((e) => PostCard(item: e))
+              .toList(),
+          onRefresh: userPostTableViewModel.reload,
+        )
+      ]))
+    ]);
   }
 }

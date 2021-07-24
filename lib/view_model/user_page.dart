@@ -1,9 +1,7 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
-import 'package:posttree/model/post.dart';
 import 'package:posttree/model/user.dart';
 import 'package:posttree/utils/event.dart';
-import 'package:posttree/utils/random.dart';
 
 class UserPageViewModel extends ChangeNotifier {
   UserPageViewModel({required this.userId});
@@ -15,9 +13,6 @@ class UserPageViewModel extends ChangeNotifier {
   User? _user;
   User? get user => _user;
 
-  List<Post> _items = [];
-  List<Post> get items => _items;
-
   Future<void> reload() async {
     await Future.delayed(Duration(seconds: 1));
     // TODO get user profile
@@ -28,20 +23,6 @@ class UserPageViewModel extends ChangeNotifier {
             value:
                 "https://pbs.twimg.com/profile_images/1138564670325792769/lN3Ggmem_400x400.jpg"));
     this._user = user;
-
-    this._items.insert(
-        0,
-        Post(
-            id: randomString(10),
-            message: randomString(50),
-            user: User(
-                userId: UserId(id: randomString(10)),
-                userName: UserName(value: randomString(5)),
-                userIconImage: UserIconImage(
-                    value:
-                        "https://pbs.twimg.com/profile_images/1138564670325792769/lN3Ggmem_400x400.jpg")),
-            isMine: true));
-
     _eventAction.sink.add(EventSuccess());
     notifyListeners();
   }

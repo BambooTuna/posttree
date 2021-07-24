@@ -54,3 +54,26 @@ class TimelinePostTableViewModel extends PostTableViewModel {
     notifyListeners();
   }
 }
+
+class UserPostTableViewModel extends PostTableViewModel {
+  final UserId userId;
+  UserPostTableViewModel({required this.userId});
+
+  @override
+  Future<void> reload() async {
+    await Future.delayed(Duration(seconds: 1));
+    this._items.insert(
+        0,
+        Post(
+            id: randomString(10),
+            message: randomString(50),
+            user: User(
+                userId: UserId(id: this.userId.id),
+                userName: UserName(value: this.userId.id),
+                userIconImage: UserIconImage(
+                    value:
+                        "https://pbs.twimg.com/profile_images/1138564670325792769/lN3Ggmem_400x400.jpg")),
+            isMine: false));
+    notifyListeners();
+  }
+}
