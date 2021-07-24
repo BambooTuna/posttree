@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
+import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:posttree/const/login.dart';
 import 'package:posttree/utils/event.dart';
 import 'package:posttree/utils/state.dart';
@@ -11,35 +12,42 @@ class PostFormViewModel extends ChangeNotifier {
   var _eventAction = StreamController<Event>.broadcast();
   StreamController<Event> get eventAction => _eventAction;
 
-  String _content = "";
-  String get content => _content;
+  final _formKey = GlobalKey<FormBuilderState>();
+  GlobalKey<FormBuilderState> get formKey => _formKey;
 
-  String? _errorMessage = "";
-  String? get errorMessage => _errorMessage;
+  Map<String, dynamic> _value = {};
+  Map<String, dynamic> get initialValue => _value;
 
   var _uiState = UiState.Idle;
   UiState get uiState => _uiState;
   bool get isLogging => uiState == UiState.Loading;
 
-  setContent(String text) {
-    this._content = text;
-    this.validation();
-  }
-
-  clear() {
-    this._content = "";
-  }
-
-  validation() {
-    if (this._content == "") {
-      this._errorMessage = "何か入力してね！";
-    } else {
-      this._errorMessage = null;
+  cacheValue() {
+    if (_formKey.currentState?.value.isNotEmpty ?? false) {
+      return;
     }
-    notifyListeners();
+    _formKey.currentState?.save();
+    _value = _formKey.currentState?.value ?? {};
+  }
+
+  clearCache() {
+    _value = {};
+  }
+
+  resetState() {
+    _formKey.currentState?.reset();
+  }
+
+  bool validate() {
+    return _formKey.currentState?.validate() ?? false;
   }
 
   send() async {
+    this.cacheValue();
+    if (!this.validate()) {
+      return;
+    }
+
     if (_uiState == UiState.Loading) {
       return;
     }
@@ -47,18 +55,16 @@ class PostFormViewModel extends ChangeNotifier {
     _uiState = UiState.Loading;
     notifyListeners();
 
-    this.validation();
-    if (this._errorMessage == null) {
-      await Future.delayed(Duration(seconds: 1));
-      // TODO: send _content to server
-      _eventAction.sink.add(EventSuccess());
-    } else {
-      _eventAction.sink.add(EventFailed());
-    }
+    await Future.delayed(Duration(seconds: 1));
+    // TODO: send _content to server
+    _eventAction.sink.add(EventSuccess());
 
-    this.clear();
+    this.clearCache();
+    this.resetState();
     _uiState = UiState.Loaded;
     notifyListeners();
+
+    EasyLoading.dismiss();
   }
 
   @override

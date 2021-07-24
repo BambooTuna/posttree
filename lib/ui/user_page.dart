@@ -100,8 +100,8 @@ class _UserPageBodyState extends State<UserPageBody> {
     var user = userPageViewModel.user ?? defaultUser();
     return Column(children: [
       UserIconWidget(
-        iconSize: 200.0,
-        radius: 80,
+        iconSize: 160.0,
+        radius: 70,
         onTap: () {},
         iconUrl: user.userIconImage.value,
       ),
