@@ -51,6 +51,17 @@
     			<string>com.googleusercontent.apps.699408429612-huha8q5c9jcvalact1nan2otl1mn2h5t</string>
     		</array>
     	</dict>
+    	<dict>
+            <key>CFBundleTypeRole</key>
+            <string>Editor</string>
+            <key>CFBundleURLName</key>
+            <string></string>
+            <key>CFBundleURLSchemes</key>
+            <array>
+              <!-- Registered Callback URLs in TwitterApp -->
+              <string>posttree</string>
+            </array>
+        </dict>
     </array>
 </dict>
 </plist>

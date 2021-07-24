@@ -11,6 +11,10 @@ help: ## show help
 fmt:
 	flutter format .
 
+.PHONY: update-ios
+update-ios:
+	pod install --repo-update
+
 .PHONY: version-patch-up
 version-patch-up:
 	awk -F '.' '{printf "%d.%d.%d", $$1, $$2, $$3+1 > "version"}' version

@@ -15,8 +15,13 @@ class AuthenticateViewModel extends ChangeNotifier {
   StreamController<User?> get authenticateSuccessAction =>
       _authenticateSuccessAction;
 
-  Future<void> signIn() async {
+  Future<void> signInWithGoogle() async {
     await accountRepository.signInWithGoogle();
+    this.authenticate();
+  }
+
+  Future<void> signInWithTwitter() async {
+    await accountRepository.signInWithTwitter();
     this.authenticate();
   }
 

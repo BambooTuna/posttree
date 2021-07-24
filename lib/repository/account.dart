@@ -4,6 +4,7 @@ import 'package:posttree/utils/authentication_provider.dart';
 
 abstract class AccountRepository {
   Future<void> signInWithGoogle();
+  Future<void> signInWithTwitter();
 
   Future<void> signUp(ServiceId serviceId, UserId userId);
   Future<UserId?> verifyUser(ServiceId serviceId);
@@ -41,6 +42,11 @@ class AccountRepositoryImpl implements AccountRepository {
   @override
   Future<void> signInWithGoogle() async {
     await authenticationProvider.signInWithGoogle();
+  }
+
+  @override
+  Future<void> signInWithTwitter() async {
+    await authenticationProvider.signInWithTwitter();
   }
 
   @override

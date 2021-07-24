@@ -1,6 +1,9 @@
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:posttree/model/account.dart';
+import 'package:twitter_login/twitter_login.dart';
+import 'package:universal_platform/universal_platform.dart';
 
 class AuthenticationProvider {
   final FirebaseAuth firebaseAuth;
@@ -23,12 +26,35 @@ class AuthenticationProvider {
   }
 
   Future<UserCredential> signInWithGoogle() async {
+    if (UniversalPlatform.isWeb) {
+      GoogleAuthProvider googleProvider = GoogleAuthProvider();
+      googleProvider
+          .addScope('https://www.googleapis.com/auth/contacts.readonly');
+      return await firebaseAuth.signInWithPopup(googleProvider);
+    }
     final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
     final GoogleSignInAuthentication googleAuth =
         await googleUser!.authentication;
     final credential = GoogleAuthProvider.credential(
       accessToken: googleAuth.accessToken,
       idToken: googleAuth.idToken,
+    );
+    return await firebaseAuth.signInWithCredential(credential);
+  }
+
+  Future<UserCredential> signInWithTwitter() async {
+    if (UniversalPlatform.isWeb) {
+      return await firebaseAuth.signInWithPopup(TwitterAuthProvider());
+    }
+    final twitterLogin = TwitterLogin(
+      apiKey: dotenv.env['TWITTER_API_KEY']!,
+      apiSecretKey: dotenv.env['TWITTER_API_SECRET_KEY']!,
+      redirectURI: 'twitterkit-CxLT5om5C1lfxvzQxVZPzrahB://',
+    );
+    final authResult = await twitterLogin.login();
+    final credential = TwitterAuthProvider.credential(
+      accessToken: authResult.authToken!,
+      secret: authResult.authTokenSecret!,
     );
     return await firebaseAuth.signInWithCredential(credential);
   }

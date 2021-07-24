@@ -63,17 +63,6 @@ class _LoginBodyState extends State<LoginBody> {
 }
 
 class _LoginButton extends StatelessWidget {
-  VoidCallback _onPressed(LoginViewModel viewModel) {
-    if (viewModel.isLogging) {
-      return () {};
-    } else {
-      return () {
-        viewModel.login();
-        EasyLoading.show(status: loadingText);
-      };
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     return Consumer(
@@ -87,13 +76,20 @@ class _LoginButton extends StatelessWidget {
                 text: signInWithGoogle,
                 onPressed: () {
                   final viewModel = watch(loginViewModelProvider);
-                  if (viewModel.isLogging) {
-                    return () {};
-                  } else {
-                    return () {
-                      viewModel.login();
-                      EasyLoading.show(status: loadingText);
-                    };
+                  if (!viewModel.isLogging) {
+                    viewModel.signInWithGoogle();
+                    EasyLoading.show(status: loadingText);
+                  }
+                },
+              ),
+              SignInButton(
+                Buttons.Twitter,
+                text: signInWithTwitter,
+                onPressed: () {
+                  final viewModel = watch(loginViewModelProvider);
+                  if (!viewModel.isLogging) {
+                    viewModel.signInWithTwitter();
+                    EasyLoading.show(status: loadingText);
                   }
                 },
               ),
