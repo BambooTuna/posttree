@@ -65,7 +65,8 @@ class _UserSmallIconState extends State<UserSmallIcon> {
         onTap: () {
           Navigator.of(context).pushNamed("/login");
         },
-        iconUrl: "https://cdn.pixabay.com/photo/2013/07/12/19/24/anonymous-154716_1280.png",
+        iconUrl:
+            "https://cdn.pixabay.com/photo/2013/07/12/19/24/anonymous-154716_1280.png",
       );
     }
   }
@@ -80,10 +81,10 @@ class _HomeFloatingActionButton extends StatelessWidget {
         showModalBottomSheet<void>(
           context: context,
           // isScrollControlled: true,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.vertical(top: Radius.circular(15)),
-            ),
-            backgroundColor: Theme.of(context).backgroundColor,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.vertical(top: Radius.circular(15)),
+          ),
+          backgroundColor: Theme.of(context).backgroundColor,
           builder: (BuildContext context) {
             return Container(
               height: 400,

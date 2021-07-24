@@ -1,15 +1,14 @@
-
-
 import 'dart:math';
 
 String randomString(int length) {
-  const _randomChars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+  const _randomChars =
+      "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
   const _charsLength = _randomChars.length;
 
   final rand = new Random();
   final codeUnits = new List.generate(
     length,
-        (index) {
+    (index) {
       final n = rand.nextInt(_charsLength);
       return _randomChars.codeUnitAt(n);
     },

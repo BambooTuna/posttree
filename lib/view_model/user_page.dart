@@ -17,14 +17,13 @@ class UserPageViewModel extends ChangeNotifier {
 
   List<Post> _items = [
     Post(
-        message:
-        randomString(100),
+        message: randomString(100),
         user: User(
             userId: UserId(id: "userId"),
             userName: UserName(value: "userName"),
             userIconImage: UserIconImage(
                 value:
-                "https://pbs.twimg.com/profile_images/1138564670325792769/lN3Ggmem_400x400.jpg")),
+                    "https://pbs.twimg.com/profile_images/1138564670325792769/lN3Ggmem_400x400.jpg")),
         isMine: false),
     Post(
         message: "???",
@@ -33,7 +32,7 @@ class UserPageViewModel extends ChangeNotifier {
             userName: UserName(value: "たけちゃ"),
             userIconImage: UserIconImage(
                 value:
-                "https://pbs.twimg.com/profile_images/1138564670325792769/lN3Ggmem_400x400.jpg")),
+                    "https://pbs.twimg.com/profile_images/1138564670325792769/lN3Ggmem_400x400.jpg")),
         isMine: true)
   ];
   List<Post> get items => _items;
@@ -49,16 +48,17 @@ class UserPageViewModel extends ChangeNotifier {
                 "https://pbs.twimg.com/profile_images/1138564670325792769/lN3Ggmem_400x400.jpg"));
     this._user = user;
 
-    this._items.insert(0, Post(
-        message:
-        randomString(50),
-        user: User(
-            userId: UserId(id: randomString(10)),
-            userName: UserName(value: randomString(5)),
-            userIconImage: UserIconImage(
-                value:
-                "https://pbs.twimg.com/profile_images/1138564670325792769/lN3Ggmem_400x400.jpg")),
-        isMine: false));
+    this._items.insert(
+        0,
+        Post(
+            message: randomString(50),
+            user: User(
+                userId: UserId(id: randomString(10)),
+                userName: UserName(value: randomString(5)),
+                userIconImage: UserIconImage(
+                    value:
+                        "https://pbs.twimg.com/profile_images/1138564670325792769/lN3Ggmem_400x400.jpg")),
+            isMine: false));
 
     _eventAction.sink.add(EventSuccess());
     notifyListeners();
