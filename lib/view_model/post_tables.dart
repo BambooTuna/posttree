@@ -26,7 +26,7 @@ abstract class PostTableViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> reload();
+  Future<void> load(UserId userId);
 
   @override
   void dispose() {
@@ -37,7 +37,7 @@ abstract class PostTableViewModel extends ChangeNotifier {
 
 class TimelinePostTableViewModel extends PostTableViewModel {
   @override
-  Future<void> reload() async {
+  Future<void> load(UserId userId) async {
     await Future.delayed(Duration(seconds: 1));
     this._items.insert(
         0,
@@ -56,11 +56,8 @@ class TimelinePostTableViewModel extends PostTableViewModel {
 }
 
 class UserPostTableViewModel extends PostTableViewModel {
-  final UserId userId;
-  UserPostTableViewModel({required this.userId});
-
   @override
-  Future<void> reload() async {
+  Future<void> load(UserId userId) async {
     await Future.delayed(Duration(seconds: 1));
     this._items.insert(
         0,
@@ -68,8 +65,8 @@ class UserPostTableViewModel extends PostTableViewModel {
             id: randomString(10),
             message: randomString(50),
             user: User(
-                userId: UserId(id: this.userId.id),
-                userName: UserName(value: this.userId.id),
+                userId: UserId(id: userId.id),
+                userName: UserName(value: userId.id),
                 userIconImage: UserIconImage(
                     value:
                         "https://pbs.twimg.com/profile_images/1138564670325792769/lN3Ggmem_400x400.jpg")),
@@ -79,11 +76,8 @@ class UserPostTableViewModel extends PostTableViewModel {
 }
 
 class DraftPostTableViewModel extends PostTableViewModel {
-  final UserId userId;
-  DraftPostTableViewModel({required this.userId});
-
   @override
-  Future<void> reload() async {
+  Future<void> load(UserId userId) async {
     await Future.delayed(Duration(seconds: 1));
     notifyListeners();
   }

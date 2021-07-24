@@ -4,20 +4,17 @@ import 'package:posttree/model/user.dart';
 import 'package:posttree/utils/event.dart';
 
 class UserPageViewModel extends ChangeNotifier {
-  UserPageViewModel({required this.userId});
-
   var _eventAction = StreamController<Event>();
   StreamController<Event> get eventAction => _eventAction;
 
-  final UserId userId;
   User? _user;
   User? get user => _user;
 
-  Future<void> reload() async {
+  Future<void> load(UserId userId) async {
     await Future.delayed(Duration(seconds: 1));
     // TODO get user profile
     final user = User(
-        userId: this.userId,
+        userId: userId,
         userName: UserName(value: "たけちゃ"),
         userIconImage: UserIconImage(
             value:

@@ -1,35 +1,32 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_signin_button/button_list.dart';
 import 'package:flutter_signin_button/button_view.dart';
 import 'package:posttree/const/login.dart';
 import 'package:posttree/utils/event.dart';
-import 'package:posttree/view_model/authenticate.dart';
 import 'package:posttree/view_model/login.dart';
-import 'package:provider/provider.dart';
+
+import '../main.dart';
+
+final loginViewModelProvider = ChangeNotifierProvider(
+  (ref) => LoginViewModel(
+      authenticateViewModel: ref.read(authenticateViewModelProvider)),
+);
 
 class Login extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return MultiProvider(
-      providers: [
-        ChangeNotifierProvider(
-            create: (context) => LoginViewModel(
-                authenticateViewModel: Provider.of<AuthenticateViewModel>(
-                    context,
-                    listen: false))),
-      ],
-      child: Scaffold(
-        backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-        appBar: AppBar(
-          title: Text(
-            viewTitle,
-            style: Theme.of(context).appBarTheme.titleTextStyle,
-          ),
-          backgroundColor: Theme.of(context).appBarTheme.backgroundColor,
+    return Scaffold(
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+      appBar: AppBar(
+        title: Text(
+          viewTitle,
+          style: Theme.of(context).appBarTheme.titleTextStyle,
         ),
-        body: LoginBody(),
+        backgroundColor: Theme.of(context).appBarTheme.backgroundColor,
       ),
+      body: LoginBody(),
     );
   }
 }
@@ -44,7 +41,7 @@ class _LoginBodyState extends State<LoginBody> {
   void initState() {
     super.initState();
 
-    var viewModel = Provider.of<LoginViewModel>(context, listen: false);
+    var viewModel = context.read(loginViewModelProvider);
     viewModel.loginSuccessAction.stream.listen((event) {
       EasyLoading.dismiss();
       switch (event.runtimeType) {
@@ -79,8 +76,8 @@ class _LoginButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Consumer<LoginViewModel>(
-      builder: (context, viewModel, _) {
+    return Consumer(
+      builder: (context, watch, child) {
         return Center(
             child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -88,7 +85,17 @@ class _LoginButton extends StatelessWidget {
               SignInButton(
                 Buttons.Google,
                 text: signInWithGoogle,
-                onPressed: _onPressed(viewModel),
+                onPressed: () {
+                  final viewModel = watch(loginViewModelProvider);
+                  if (viewModel.isLogging) {
+                    return () {};
+                  } else {
+                    return () {
+                      viewModel.login();
+                      EasyLoading.show(status: loadingText);
+                    };
+                  }
+                },
               ),
             ]));
       },

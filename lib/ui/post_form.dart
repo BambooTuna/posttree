@@ -6,7 +6,11 @@ import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:posttree/utils/event.dart';
 import 'package:posttree/view_model/post_form.dart';
-import 'package:provider/provider.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+
+final postFormViewModelProvider = ChangeNotifierProvider(
+  (ref) => PostFormViewModel(),
+);
 
 Future<void> openPostFormModal(BuildContext context) {
   return showModalBottomSheet(
@@ -17,18 +21,13 @@ Future<void> openPostFormModal(BuildContext context) {
       ),
       backgroundColor: Theme.of(context).dialogTheme.backgroundColor,
       builder: (c) {
-        var viewModel = Provider.of<PostFormViewModel>(context, listen: false);
-        return ChangeNotifierProvider.value(
-          value: viewModel,
-          child: SingleChildScrollView(
-              child: AnimatedPadding(
-            duration: Duration(milliseconds: 150),
-            curve: Curves.easeOut,
-            padding:
-                EdgeInsets.only(bottom: MediaQuery.of(c).viewInsets.bottom),
-            child: PostForm(),
-          )),
-        );
+        return SingleChildScrollView(
+            child: AnimatedPadding(
+          duration: Duration(milliseconds: 150),
+          curve: Curves.easeOut,
+          padding: EdgeInsets.only(bottom: MediaQuery.of(c).viewInsets.bottom),
+          child: PostForm(),
+        ));
       });
 }
 
@@ -43,7 +42,8 @@ class _PostFormState extends State<PostForm> {
   @override
   void initState() {
     super.initState();
-    var viewModel = Provider.of<PostFormViewModel>(context, listen: false);
+
+    var viewModel = context.read(postFormViewModelProvider);
     _subscription = viewModel.eventAction.stream.listen((event) {
       EasyLoading.dismiss();
       switch (event.runtimeType) {
@@ -58,55 +58,58 @@ class _PostFormState extends State<PostForm> {
 
   @override
   Widget build(BuildContext context) {
-    final viewModel = Provider.of<PostFormViewModel>(context);
-    final formKey = viewModel.formKey;
-    return Container(
-      padding: EdgeInsets.all(20),
-      child: FormBuilder(
-        key: formKey,
-        initialValue: viewModel.initialValue,
-        autovalidateMode: AutovalidateMode.always,
-        onWillPop: () async {
-          viewModel.cacheValue();
-          return true;
-        },
-        child: Column(children: <Widget>[
-          Row(
-            mainAxisAlignment: MainAxisAlignment.end,
-            children: [
-              ElevatedButton.icon(
-                icon: Icon(
-                  Icons.send_sharp,
-                  color: Theme.of(context).buttonTheme.colorScheme?.background,
+    return Consumer(builder: (context, watch, child) {
+      final viewModel = watch(postFormViewModelProvider);
+      final formKey = viewModel.formKey;
+      return Container(
+        padding: EdgeInsets.all(20),
+        child: FormBuilder(
+          key: formKey,
+          initialValue: viewModel.initialValue,
+          autovalidateMode: AutovalidateMode.always,
+          onWillPop: () async {
+            viewModel.cacheValue();
+            return true;
+          },
+          child: Column(children: <Widget>[
+            Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                ElevatedButton.icon(
+                  icon: Icon(
+                    Icons.send_sharp,
+                    color:
+                        Theme.of(context).buttonTheme.colorScheme?.background,
+                  ),
+                  label: const Text("送信"),
+                  style: ElevatedButton.styleFrom(
+                    primary: Theme.of(context).buttonTheme.colorScheme?.primary,
+                    onPrimary:
+                        Theme.of(context).buttonTheme.colorScheme?.onPrimary,
+                    shape: const StadiumBorder(),
+                  ),
+                  onPressed: () {
+                    viewModel.send();
+                  },
                 ),
-                label: const Text("送信"),
-                style: ElevatedButton.styleFrom(
-                  primary: Theme.of(context).buttonTheme.colorScheme?.primary,
-                  onPrimary:
-                      Theme.of(context).buttonTheme.colorScheme?.onPrimary,
-                  shape: const StadiumBorder(),
-                ),
-                onPressed: () {
-                  viewModel.send();
-                },
-              ),
-            ],
-          ),
-          FormBuilderTextField(
-            name: "content",
-            autofocus: true,
-            maxLines: 5,
-            validator: FormBuilderValidators.compose([
-              FormBuilderValidators.required(context),
-              FormBuilderValidators.maxLength(context, 150),
-            ]),
-            keyboardType: TextInputType.text,
-            style: Theme.of(context).textTheme.subtitle1,
-          ),
-          SizedBox(height: 48),
-        ]),
-      ),
-    );
+              ],
+            ),
+            FormBuilderTextField(
+              name: "content",
+              autofocus: true,
+              maxLines: 5,
+              validator: FormBuilderValidators.compose([
+                FormBuilderValidators.required(context),
+                FormBuilderValidators.maxLength(context, 150),
+              ]),
+              keyboardType: TextInputType.text,
+              style: Theme.of(context).textTheme.subtitle1,
+            ),
+            SizedBox(height: 48),
+          ]),
+        ),
+      );
+    });
   }
 
   @override
