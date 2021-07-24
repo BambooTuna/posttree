@@ -14,7 +14,7 @@ Future<void> openPostFormModal(BuildContext context) => showModalBottomSheet(
       borderRadius: BorderRadius.vertical(top: Radius.circular(15)),
     ),
     backgroundColor: Theme.of(context).dialogTheme.backgroundColor,
-    builder: (_) {
+    builder: (c) {
       var viewModel = Provider.of<PostFormViewModel>(context, listen: false);
       return ChangeNotifierProvider.value(
         value: viewModel,
@@ -22,8 +22,7 @@ Future<void> openPostFormModal(BuildContext context) => showModalBottomSheet(
             child: AnimatedPadding(
           duration: Duration(milliseconds: 150),
           curve: Curves.easeOut,
-          padding:
-              EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
+          padding: EdgeInsets.only(bottom: MediaQuery.of(c).viewInsets.bottom),
           child: PostForm(),
         )),
       );
