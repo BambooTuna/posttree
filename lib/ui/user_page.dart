@@ -30,6 +30,8 @@ class UserPage extends StatelessWidget {
             create: (context) => UserPageViewModel(userId: userId)),
         ChangeNotifierProvider(
             create: (context) => UserPostTableViewModel(userId: userId)),
+        ChangeNotifierProvider(
+            create: (context) => DraftPostTableViewModel(userId: userId)),
       ],
       child: Scaffold(
         appBar: AppBar(
@@ -94,6 +96,7 @@ class _UserPageBodyState extends State<UserPageBody> {
   Widget build(BuildContext context) {
     var userPageViewModel = Provider.of<UserPageViewModel>(context);
     var userPostTableViewModel = Provider.of<UserPostTableViewModel>(context);
+    var draftPostTableViewModel = Provider.of<DraftPostTableViewModel>(context);
 
     var user = userPageViewModel.user ?? defaultUser();
     return Column(children: [
@@ -103,6 +106,12 @@ class _UserPageBodyState extends State<UserPageBody> {
         onTap: () {},
         iconUrl: user.userIconImage.value,
       ),
+      SizedBox(height: 12),
+      Text(
+        user.userName.value,
+        style: Theme.of(context).textTheme.headline6,
+      ),
+      SizedBox(height: 24),
       Expanded(
           child: TabBarWidget(tabs: [
         Tab(
@@ -123,12 +132,22 @@ class _UserPageBodyState extends State<UserPageBody> {
               .map((e) => PostCard(item: e))
               .toList(),
           onRefresh: userPostTableViewModel.reload,
+          lastWidget: Center(
+              child: Text(
+            "投稿したものはここに表示されるよ",
+            style: Theme.of(context).textTheme.bodyText1,
+          )),
         ),
         RefreshableItemTable(
-          items: userPostTableViewModel.items
+          items: draftPostTableViewModel.items
               .map((e) => PostCard(item: e))
               .toList(),
-          onRefresh: userPostTableViewModel.reload,
+          onRefresh: draftPostTableViewModel.reload,
+          lastWidget: Center(
+              child: Text(
+            "下書きはここに表示されるよ",
+            style: Theme.of(context).textTheme.bodyText1,
+          )),
         )
       ]))
     ]);

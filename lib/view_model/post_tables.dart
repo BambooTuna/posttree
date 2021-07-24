@@ -77,3 +77,14 @@ class UserPostTableViewModel extends PostTableViewModel {
     notifyListeners();
   }
 }
+
+class DraftPostTableViewModel extends PostTableViewModel {
+  final UserId userId;
+  DraftPostTableViewModel({required this.userId});
+
+  @override
+  Future<void> reload() async {
+    await Future.delayed(Duration(seconds: 1));
+    notifyListeners();
+  }
+}

@@ -30,8 +30,8 @@ class User {
 
 User defaultUser() {
   return User(
-      userId: UserId(id: "ore"),
-      userName: UserName(value: "オレだよ俺"),
+      userId: UserId(id: ""),
+      userName: UserName(value: ""),
       userIconImage: UserIconImage(
           value:
               "https://1.bp.blogspot.com/-4tNnDdIsRL4/XSGFxRFKjEI/AAAAAAABTj4/6mcXrJTACacR4w6EkFS6jXb7u2OrG6NwQCLcBGAs/s800/sagi_denwa_oldman.png"));

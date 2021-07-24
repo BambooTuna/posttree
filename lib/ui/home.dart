@@ -145,6 +145,11 @@ class _HomeBodyState extends State<HomeBody> {
           child: RefreshableItemTable(
             items: viewModel.items.map((e) => PostCard(item: e)).toList(),
             onRefresh: viewModel.reload,
+            lastWidget: Center(
+                child: Text(
+              "みんなの投稿が表示されるよ、下に引っ張ってリロード",
+              style: Theme.of(context).textTheme.bodyText1,
+            )),
           ),
         ),
       ],
