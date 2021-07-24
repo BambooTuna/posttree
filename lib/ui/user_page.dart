@@ -5,6 +5,8 @@ import 'package:posttree/const/user_page.dart';
 import 'package:posttree/model/user.dart';
 import 'package:posttree/utils/event.dart';
 import 'package:posttree/view_model/user_page.dart';
+import 'package:posttree/widget/post_card.dart';
+import 'package:posttree/widget/refreshable_post_table.dart';
 import 'package:posttree/widget/tabbar.dart';
 import 'package:posttree/widget/user_icon.dart';
 import 'package:posttree/widget/user_setting.dart';
@@ -84,124 +86,39 @@ class _UserPageBodyState extends State<UserPageBody> {
   Widget build(BuildContext context) {
     return Consumer<UserPageViewModel>(
       builder: (context, viewModel, _) {
-        if (viewModel.user == null) {
-          return Container();
-        } else {
-          return Column(children: [
-            UserIconWidget(
-              iconSize: 240.0,
-              radius: 120,
-              onTap: () {},
-              iconUrl: viewModel.user!.userIconImage.value,
-            ),
-            Expanded(
-                child: TabBarWidget(tabs: [
-              Tab(
-                text: 'One',
+        var user = viewModel.user ?? defaultUser();
+        return Column(children: [
+          UserIconWidget(
+            iconSize: 200.0,
+            radius: 80,
+            onTap: () {},
+            iconUrl: user.userIconImage.value,
+          ),
+          Expanded(
+              child: TabBarWidget(tabs: [
+            Tab(
+              icon: Icon(
+                Icons.paste,
+                color: Theme.of(context).iconTheme.color,
               ),
-              Tab(
-                text: 'Two',
-              )
-            ], children: [
-              RefreshIndicator(
-                  onRefresh: () async {
-                    await viewModel.reload();
-                  },
-                  child: ListView.separated(
-                    physics: AlwaysScrollableScrollPhysics(),
-                    padding: EdgeInsets.all(5),
-                    itemCount: viewModel.items.length,
-                    itemBuilder: (BuildContext context, int i) {
-                      final item = viewModel.items[i];
-                      final userIcon = UserIconWidget(
-                        iconSize: 48,
-                        radius: 20,
-                        onTap: () {
-                          Navigator.of(context).pushNamed("/profile",
-                              arguments:
-                                  UserPageArguments(item.user.userId.id));
-                        },
-                        iconUrl: item.user.userIconImage.value,
-                      );
-                      return Card(
-                        color: Theme.of(context).cardTheme.color,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                        child: Padding(
-                          padding: EdgeInsets.all(12),
-                          child: ListTile(
-                            leading: item.isMine ? null : userIcon,
-                            title: Row(children: <Widget>[
-                              Text(
-                                item.user.userName.value,
-                                style: Theme.of(context).textTheme.headline6,
-                              ),
-                            ]),
-                            subtitle: Text(
-                              item.message,
-                              style: Theme.of(context).textTheme.subtitle1,
-                            ),
-                            trailing: item.isMine ? userIcon : null,
-                          ),
-                        ),
-                      );
-                    },
-                    separatorBuilder: (BuildContext context, int index) {
-                      return SizedBox(height: 10);
-                    },
-                  )),
-              RefreshIndicator(
-                  onRefresh: () async {
-                    await viewModel.reload();
-                  },
-                  child: ListView.separated(
-                    physics: AlwaysScrollableScrollPhysics(),
-                    padding: EdgeInsets.all(5),
-                    itemCount: viewModel.items.length,
-                    itemBuilder: (BuildContext context, int i) {
-                      final item = viewModel.items[i];
-                      final userIcon = UserIconWidget(
-                        iconSize: 48,
-                        radius: 20,
-                        onTap: () {
-                          Navigator.of(context).pushNamed("/profile",
-                              arguments:
-                                  UserPageArguments(item.user.userId.id));
-                        },
-                        iconUrl: item.user.userIconImage.value,
-                      );
-                      return Card(
-                        color: Theme.of(context).cardTheme.color,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                        child: Padding(
-                          padding: EdgeInsets.all(12),
-                          child: ListTile(
-                            leading: item.isMine ? null : userIcon,
-                            title: Row(children: <Widget>[
-                              Text(
-                                item.user.userName.value,
-                                style: Theme.of(context).textTheme.headline6,
-                              ),
-                            ]),
-                            subtitle: Text(
-                              item.message,
-                              style: Theme.of(context).textTheme.subtitle1,
-                            ),
-                            trailing: item.isMine ? userIcon : null,
-                          ),
-                        ),
-                      );
-                    },
-                    separatorBuilder: (BuildContext context, int index) {
-                      return SizedBox(height: 10);
-                    },
-                  ))
-            ]))
-          ]);
-        }
+            ),
+            Tab(
+              icon: Icon(
+                Icons.edit,
+                color: Theme.of(context).iconTheme.color,
+              ),
+            )
+          ], children: [
+            RefreshableItemTable(
+              items: viewModel.items.map((e) => PostCard(item: e)).toList(),
+              onRefresh: viewModel.reload,
+            ),
+            RefreshableItemTable(
+              items: viewModel.items.map((e) => PostCard(item: e)).toList(),
+              onRefresh: viewModel.reload,
+            )
+          ]))
+        ]);
       },
     );
   }

@@ -3,27 +3,8 @@ import 'package:posttree/model/post.dart';
 import 'package:posttree/model/user.dart';
 import 'package:posttree/utils/random.dart';
 
-class PostTableViewModel extends ChangeNotifier {
-  List<Post> _items = [
-    Post(
-        message: randomString(100),
-        user: User(
-            userId: UserId(id: "userId"),
-            userName: UserName(value: "userName"),
-            userIconImage: UserIconImage(
-                value:
-                    "https://pbs.twimg.com/profile_images/1138564670325792769/lN3Ggmem_400x400.jpg")),
-        isMine: false),
-    Post(
-        message: "???",
-        user: User(
-            userId: UserId(id: "takeo"),
-            userName: UserName(value: "たけちゃ"),
-            userIconImage: UserIconImage(
-                value:
-                    "https://pbs.twimg.com/profile_images/1138564670325792769/lN3Ggmem_400x400.jpg")),
-        isMine: true)
-  ];
+abstract class PostTableViewModel extends ChangeNotifier {
+  List<Post> _items = [];
   List<Post> get items => _items;
 
   bool _editMode = false;
@@ -45,10 +26,23 @@ class PostTableViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
+  Future<void> reload();
+
+  @override
+  void dispose() {
+    // streamを必ず閉じる
+    super.dispose();
+  }
+}
+
+class TimelinePostTableViewModel extends PostTableViewModel {
+  @override
   Future<void> reload() async {
+    await Future.delayed(Duration(seconds: 1));
     this._items.insert(
         0,
         Post(
+            id: randomString(10),
             message: randomString(50),
             user: User(
                 userId: UserId(id: randomString(10)),
@@ -57,14 +51,6 @@ class PostTableViewModel extends ChangeNotifier {
                     value:
                         "https://pbs.twimg.com/profile_images/1138564670325792769/lN3Ggmem_400x400.jpg")),
             isMine: false));
-
-    await Future.delayed(Duration(seconds: 1));
     notifyListeners();
-  }
-
-  @override
-  void dispose() {
-    // streamを必ず閉じる
-    super.dispose();
   }
 }

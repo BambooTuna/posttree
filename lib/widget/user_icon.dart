@@ -30,7 +30,8 @@ class UserIconWidget extends StatelessWidget {
           child: CachedNetworkImage(
             imageUrl: this.iconUrl,
             placeholder: (context, url) => CircularProgressIndicator(),
-            errorWidget: (context, url, error) => Icon(Icons.error),
+            errorWidget: (context, url, error) =>
+                Icon(Icons.error, color: Theme.of(context).iconTheme.color),
           ),
         ),
       ),

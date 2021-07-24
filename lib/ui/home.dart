@@ -1,10 +1,10 @@
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:posttree/ui/user_page.dart';
 import 'package:posttree/view_model/authenticate.dart';
 import 'package:posttree/view_model/home.dart';
 import 'package:posttree/view_model/post_tables.dart';
-import 'package:posttree/widget/post_tables.dart';
+import 'package:posttree/widget/post_card.dart';
+import 'package:posttree/widget/refreshable_post_table.dart';
 import 'package:posttree/widget/user_icon.dart';
 import 'package:provider/provider.dart';
 
@@ -14,7 +14,7 @@ class Home extends StatelessWidget {
     return MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (_) => HomeViewModel()),
-        ChangeNotifierProvider(create: (_) => PostTableViewModel()),
+        ChangeNotifierProvider(create: (_) => TimelinePostTableViewModel()),
       ],
       child: Scaffold(
         backgroundColor: Theme.of(context).scaffoldBackgroundColor,
@@ -104,20 +104,9 @@ class _HomeFloatingActionButton extends StatelessWidget {
             );
           },
         );
-        // if (viewModel.isLogin) {
-        //   viewModel.incrementCounter();
-        // } else {
-        //   showDialog(
-        //       context: context,
-        //       builder: (context) {
-        //         return AlertDialog(
-        //           title: Text("カウンターを使いたいならログインしてちょ"),
-        //         );
-        //       }).then((_) => Navigator.of(context).pushNamed("/login"));
-        // }
       },
       tooltip: 'Increment',
-      child: Icon(Icons.add),
+      child: Icon(Icons.edit),
     );
   }
 }
@@ -141,10 +130,24 @@ class _HomeBodyState extends State<HomeBody> {
     });
     // authenticateViewModel.signOut();
     authenticateViewModel.authenticate();
+
+    var timelinePostTableViewModel =
+        Provider.of<TimelinePostTableViewModel>(context, listen: false);
+    timelinePostTableViewModel.reload();
   }
 
   @override
   Widget build(BuildContext context) {
-    return PostTable();
+    var viewModel = Provider.of<TimelinePostTableViewModel>(context);
+    return Column(
+      children: [
+        Expanded(
+          child: RefreshableItemTable(
+            items: viewModel.items.map((e) => PostCard(item: e)).toList(),
+            onRefresh: viewModel.reload,
+          ),
+        ),
+      ],
+    );
   }
 }

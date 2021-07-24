@@ -13,13 +13,14 @@ class TabBarWidget extends StatelessWidget {
       child: Column(children: [
         TabBar(
           tabs: this.tabs,
-          unselectedLabelColor: Colors.grey,
-          indicatorColor: Colors.blue,
-          indicatorSize: TabBarIndicatorSize.tab,
+          unselectedLabelColor:
+              Theme.of(context).tabBarTheme.unselectedLabelColor,
+          indicatorColor: Theme.of(context).indicatorColor,
+          indicatorSize: Theme.of(context).tabBarTheme.indicatorSize,
           indicatorWeight: 2,
           indicatorPadding: EdgeInsets.symmetric(horizontal: 18.0, vertical: 8),
-          // indicator: CustomTabIndicator(),
-          labelColor: Colors.black,
+          indicator: Theme.of(context).tabBarTheme.indicator,
+          labelColor: Theme.of(context).tabBarTheme.labelColor,
         ),
         Expanded(child: TabBarView(children: this.children))
       ]),
