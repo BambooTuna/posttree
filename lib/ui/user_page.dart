@@ -5,6 +5,7 @@ import 'package:posttree/const/user_page.dart';
 import 'package:posttree/model/user.dart';
 import 'package:posttree/utils/event.dart';
 import 'package:posttree/view_model/user_page.dart';
+import 'package:posttree/widget/tabbar.dart';
 import 'package:posttree/widget/user_icon.dart';
 import 'package:posttree/widget/user_setting.dart';
 import 'package:provider/provider.dart';
@@ -42,7 +43,8 @@ class UserPage extends StatelessWidget {
                   return SizedBox.shrink();
                 }
               },
-            )),
+            ),
+        ),
         // extendBodyBehindAppBar: true,
         body: UserPageBody(),
         endDrawer: UserSettingWidget(),
@@ -62,6 +64,7 @@ class _UserPageBodyState extends State<UserPageBody> {
   @override
   void initState() {
     super.initState();
+
     EasyLoading.show(status: loadingText);
     var viewModel = Provider.of<UserPageViewModel>(context, listen: false);
     viewModel.eventAction.stream.listen((event) {
@@ -74,40 +77,136 @@ class _UserPageBodyState extends State<UserPageBody> {
           break;
       }
     });
-    viewModel.getUserProfile();
+    viewModel.reload();
   }
 
-  static const locations = [1, 2, 3, 4, 5];
   @override
   Widget build(BuildContext context) {
     return Consumer<UserPageViewModel>(
       builder: (context, viewModel, _) {
+
         if (viewModel.user == null) {
           return Container();
         } else {
-          return SingleChildScrollView(
-              child: Column(children: <Widget>[
+          return Column(children: [
             UserIconWidget(
               iconSize: 240.0,
               radius: 120,
               onTap: () {},
               iconUrl: viewModel.user!.userIconImage.value,
             ),
-            for (final location in locations)
-              Padding(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
-                child: AspectRatio(
-                  aspectRatio: 16 / 9,
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.circular(16),
-                    child: Stack(
-                      children: [],
-                    ),
+            Expanded(child:
+            TabBarWidget(
+                tabs: [
+                  Tab(
+                    text: 'One',
                   ),
-                ),
-              ),
-          ]));
+                  Tab(
+                    text: 'Two',
+                  )
+                ],
+                children: [
+                  RefreshIndicator(
+                      onRefresh: () async {
+                        await viewModel.reload();
+                      },
+                      child: ListView.separated(
+                        physics: AlwaysScrollableScrollPhysics(),
+                        padding: EdgeInsets.all(5),
+                        itemCount: viewModel.items.length,
+                        itemBuilder: (BuildContext context, int i) {
+                          final item = viewModel.items[i];
+                          final userIcon = UserIconWidget(
+                            iconSize: 48,
+                            radius: 20,
+                            onTap: () {
+                              Navigator.of(context).pushNamed("/profile",
+                                  arguments:
+                                  UserPageArguments(item.user.userId.id));
+                            },
+                            iconUrl: item.user.userIconImage.value,
+                          );
+                          return Card(
+                            color: Theme.of(context).cardTheme.color,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                            child: Padding(
+                              padding: EdgeInsets.all(12),
+                              child: ListTile(
+                                leading: item.isMine ? null : userIcon,
+                                title: Row(children: <Widget>[
+                                  Text(
+                                    item.user.userName.value,
+                                    style: Theme.of(context).textTheme.headline6,
+                                  ),
+                                ]),
+                                subtitle: Text(
+                                  item.message,
+                                  style: Theme.of(context).textTheme.subtitle1,
+                                ),
+                                trailing: item.isMine ? userIcon : null,
+                              ),
+                            ),
+                          );
+                        },
+                        separatorBuilder: (BuildContext context, int index) {
+                          return SizedBox(height: 10);
+                        },
+                      )),
+
+                  RefreshIndicator(
+                      onRefresh: () async {
+                        await viewModel.reload();
+                      },
+                      child: ListView.separated(
+                        physics: AlwaysScrollableScrollPhysics(),
+                        padding: EdgeInsets.all(5),
+                        itemCount: viewModel.items.length,
+                        itemBuilder: (BuildContext context, int i) {
+                          final item = viewModel.items[i];
+                          final userIcon = UserIconWidget(
+                            iconSize: 48,
+                            radius: 20,
+                            onTap: () {
+                              Navigator.of(context).pushNamed("/profile",
+                                  arguments:
+                                  UserPageArguments(item.user.userId.id));
+                            },
+                            iconUrl: item.user.userIconImage.value,
+                          );
+                          return Card(
+                            color: Theme.of(context).cardTheme.color,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                            child: Padding(
+                              padding: EdgeInsets.all(12),
+                              child: ListTile(
+                                leading: item.isMine ? null : userIcon,
+                                title: Row(children: <Widget>[
+                                  Text(
+                                    item.user.userName.value,
+                                    style: Theme.of(context).textTheme.headline6,
+                                  ),
+                                ]),
+                                subtitle: Text(
+                                  item.message,
+                                  style: Theme.of(context).textTheme.subtitle1,
+                                ),
+                                trailing: item.isMine ? userIcon : null,
+                              ),
+                            ),
+                          );
+                        },
+                        separatorBuilder: (BuildContext context, int index) {
+                          return SizedBox(height: 10);
+                        },
+                      ))
+                ])
+            )
+          ]);
+
         }
       },
     );
