@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:posttree/ui/post_form.dart';
 import 'package:posttree/ui/user_page.dart';
 import 'package:posttree/view_model/authenticate.dart';
@@ -14,6 +13,8 @@ import 'package:provider/provider.dart';
 class Home extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    final bottomSpace = MediaQuery.of(context).viewInsets.bottom;
+
     return MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (_) => HomeViewModel()),
@@ -30,7 +31,10 @@ class Home extends StatelessWidget {
           leading: UserSmallIcon(),
           backgroundColor: Theme.of(context).appBarTheme.backgroundColor,
         ),
-        body: HomeBody(),
+        body: Padding(
+          padding: EdgeInsets.only(bottom: bottomSpace),
+          child: HomeBody(),
+        ),
         floatingActionButton: _HomeFloatingActionButton(),
       ),
     );

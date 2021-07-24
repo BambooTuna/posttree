@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:posttree/model/user.dart';
 import 'package:posttree/repository/account.dart';
-import 'package:posttree/style/colors.dart';
 import 'package:posttree/style/text_style.dart';
 import 'package:posttree/ui/home.dart';
 import 'package:posttree/ui/login.dart';
