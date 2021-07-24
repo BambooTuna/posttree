@@ -27,10 +27,7 @@ class AuthenticationProvider {
 
   Future<UserCredential> signInWithGoogle() async {
     if (UniversalPlatform.isWeb) {
-      GoogleAuthProvider googleProvider = GoogleAuthProvider();
-      googleProvider
-          .addScope('https://www.googleapis.com/auth/contacts.readonly');
-      return await firebaseAuth.signInWithPopup(googleProvider);
+      return await firebaseAuth.signInWithPopup(GoogleAuthProvider());
     }
     final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
     final GoogleSignInAuthentication googleAuth =
