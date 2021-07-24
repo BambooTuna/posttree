@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
+import 'package:posttree/ui/post_form.dart';
 import 'package:posttree/ui/user_page.dart';
 import 'package:posttree/view_model/authenticate.dart';
 import 'package:posttree/view_model/home.dart';
@@ -29,6 +31,7 @@ class Home extends StatelessWidget {
         body: HomeBody(),
         floatingActionButton: _HomeFloatingActionButton(),
       ),
+      builder: EasyLoading.init(),
     );
   }
 }
@@ -78,32 +81,17 @@ class _HomeFloatingActionButton extends StatelessWidget {
     return FloatingActionButton(
       onPressed: () {
         final viewModel = Provider.of<HomeViewModel>(context, listen: false);
-        showModalBottomSheet<void>(
-          context: context,
-          // isScrollControlled: true,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.vertical(top: Radius.circular(15)),
-          ),
-          backgroundColor: Theme.of(context).backgroundColor,
-          builder: (BuildContext context) {
-            return Container(
-              height: 400,
-              child: Center(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  mainAxisSize: MainAxisSize.min,
-                  children: <Widget>[
-                    const Text('Modal BottomSheet'),
-                    ElevatedButton(
-                      child: const Text('Close BottomSheet'),
-                      onPressed: () => Navigator.pop(context),
-                    )
-                  ],
-                ),
-              ),
-            );
-          },
-        );
+        if (viewModel.isLogin) {
+          openPostFormModal(context);
+        } else {
+          showDialog(
+              context: context,
+              builder: (context) {
+                return AlertDialog(
+                  title: Text("投稿はログインしてないと使えなさそう。。。"),
+                );
+              }).then((_) => Navigator.of(context).pushNamed("/login"));
+        }
       },
       tooltip: 'Increment',
       child: Icon(Icons.edit),

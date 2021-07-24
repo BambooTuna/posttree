@@ -20,11 +20,14 @@ class Login extends StatelessWidget {
                     listen: false))),
       ],
       child: Scaffold(
+        backgroundColor: Theme.of(context).scaffoldBackgroundColor,
         appBar: AppBar(
-            title: Text(
-          viewTitle,
-          style: Theme.of(context).primaryTextTheme.headline4,
-        )),
+          title: Text(
+            viewTitle,
+            style: Theme.of(context).appBarTheme.titleTextStyle,
+          ),
+          backgroundColor: Theme.of(context).appBarTheme.backgroundColor,
+        ),
         body: LoginBody(),
       ),
       builder: EasyLoading.init(),
