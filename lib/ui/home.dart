@@ -13,8 +13,6 @@ import 'package:provider/provider.dart';
 class Home extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    final bottomSpace = MediaQuery.of(context).viewInsets.bottom;
-
     return MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (_) => HomeViewModel()),
@@ -31,10 +29,7 @@ class Home extends StatelessWidget {
           leading: UserSmallIcon(),
           backgroundColor: Theme.of(context).appBarTheme.backgroundColor,
         ),
-        body: Padding(
-          padding: EdgeInsets.only(bottom: bottomSpace),
-          child: HomeBody(),
-        ),
+        body: HomeBody(),
         floatingActionButton: _HomeFloatingActionButton(),
       ),
     );

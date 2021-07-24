@@ -3,21 +3,28 @@ import 'dart:async';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
-import 'package:posttree/const/login.dart';
 import 'package:posttree/utils/event.dart';
 import 'package:posttree/view_model/post_form.dart';
 import 'package:provider/provider.dart';
 
 Future<void> openPostFormModal(BuildContext context) => showModalBottomSheet(
     context: context,
-    // isScrollControlled: true,
+    isScrollControlled: true,
     shape: RoundedRectangleBorder(
       borderRadius: BorderRadius.vertical(top: Radius.circular(15)),
     ),
     backgroundColor: Theme.of(context).dialogTheme.backgroundColor,
     builder: (_) {
       var viewModel = Provider.of<PostFormViewModel>(context, listen: false);
-      return ChangeNotifierProvider.value(value: viewModel, child: PostForm());
+      return ChangeNotifierProvider.value(
+        value: viewModel,
+        child: SingleChildScrollView(
+            child: Container(
+          padding:
+              EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
+          child: PostForm(),
+        )),
+      );
     });
 
 class PostForm extends StatefulWidget {
