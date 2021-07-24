@@ -8,7 +8,7 @@ import 'package:posttree/utils/event.dart';
 import 'package:posttree/utils/state.dart';
 
 class PostFormViewModel extends ChangeNotifier {
-  var _eventAction = StreamController<Event>();
+  var _eventAction = StreamController<Event>.broadcast();
   StreamController<Event> get eventAction => _eventAction;
 
   String _content = "";
@@ -24,6 +24,10 @@ class PostFormViewModel extends ChangeNotifier {
   setContent(String text) {
     this._content = text;
     this.validation();
+  }
+
+  clear() {
+    this._content = "";
   }
 
   validation() {
@@ -52,12 +56,14 @@ class PostFormViewModel extends ChangeNotifier {
       _eventAction.sink.add(EventFailed());
     }
 
+    this.clear();
     _uiState = UiState.Loaded;
     notifyListeners();
   }
 
   @override
   void dispose() {
+    print("dispose");
     // streamを必ず閉じる
     _eventAction.close();
     super.dispose();

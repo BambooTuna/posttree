@@ -4,6 +4,7 @@ import 'package:posttree/ui/post_form.dart';
 import 'package:posttree/ui/user_page.dart';
 import 'package:posttree/view_model/authenticate.dart';
 import 'package:posttree/view_model/home.dart';
+import 'package:posttree/view_model/post_form.dart';
 import 'package:posttree/view_model/post_tables.dart';
 import 'package:posttree/widget/post_card.dart';
 import 'package:posttree/widget/refreshable_post_table.dart';
@@ -17,6 +18,7 @@ class Home extends StatelessWidget {
       providers: [
         ChangeNotifierProvider(create: (_) => HomeViewModel()),
         ChangeNotifierProvider(create: (_) => TimelinePostTableViewModel()),
+        ChangeNotifierProvider(create: (_) => PostFormViewModel()),
       ],
       child: Scaffold(
         backgroundColor: Theme.of(context).scaffoldBackgroundColor,
@@ -81,6 +83,8 @@ class _HomeFloatingActionButton extends StatelessWidget {
     return FloatingActionButton(
       onPressed: () {
         final viewModel = Provider.of<HomeViewModel>(context, listen: false);
+        final postFormViewModel =
+            Provider.of<PostFormViewModel>(context, listen: false);
         if (viewModel.isLogin) {
           openPostFormModal(context);
         } else {

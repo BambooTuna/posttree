@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
@@ -13,13 +15,9 @@ Future<void> openPostFormModal(BuildContext context) => showModalBottomSheet(
       borderRadius: BorderRadius.vertical(top: Radius.circular(15)),
     ),
     backgroundColor: Theme.of(context).dialogTheme.backgroundColor,
-    builder: (context) {
-      return MultiProvider(
-        providers: [
-          ChangeNotifierProvider(create: (_) => PostFormViewModel()),
-        ],
-        child: PostForm(),
-      );
+    builder: (_) {
+      var viewModel = Provider.of<PostFormViewModel>(context, listen: false);
+      return ChangeNotifierProvider.value(value: viewModel, child: PostForm());
     });
 
 class PostForm extends StatefulWidget {
@@ -28,12 +26,15 @@ class PostForm extends StatefulWidget {
 }
 
 class _PostFormState extends State<PostForm> {
+  late String _initialValue;
+  late StreamSubscription<Event> _subscription;
   @override
   void initState() {
     super.initState();
 
     var viewModel = Provider.of<PostFormViewModel>(context, listen: false);
-    viewModel.eventAction.stream.listen((event) {
+    _initialValue = viewModel.content;
+    _subscription = viewModel.eventAction.stream.listen((event) {
       EasyLoading.dismiss();
       switch (event.runtimeType) {
         case EventSuccess:
@@ -63,8 +64,9 @@ class _PostFormState extends State<PostForm> {
                   .bodyText1
                   ?.copyWith(color: Theme.of(context).errorColor),
             ),
-            TextField(
+            TextFormField(
                 autofocus: true,
+                initialValue: _initialValue,
                 decoration: InputDecoration(
                   border: InputBorder.none,
                   hintText: "何か入力してね",
@@ -82,5 +84,11 @@ class _PostFormState extends State<PostForm> {
         ),
       ),
     );
+  }
+
+  @override
+  void dispose() {
+    _subscription.cancel();
+    super.dispose();
   }
 }
