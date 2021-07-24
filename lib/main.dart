@@ -12,9 +12,13 @@ import 'package:posttree/ui/login.dart';
 import 'package:posttree/ui/user_page.dart';
 import 'package:posttree/utils/authentication_provider.dart';
 import 'package:posttree/view_model/authenticate.dart';
+import 'package:universal_platform/universal_platform.dart';
 
 void main() async {
-  await dotenv.load(fileName: "secret/.env");
+  if (UniversalPlatform.isWeb) {}
+  if (UniversalPlatform.isIOS) {
+    await dotenv.load(fileName: "secret/native.env");
+  }
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
   configLoading();
