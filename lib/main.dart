@@ -16,8 +16,8 @@ import 'package:provider/provider.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
-  runApp(MyApp());
   configLoading();
+  runApp(MyApp());
 }
 
 class MyApp extends StatelessWidget {
@@ -35,37 +35,36 @@ class MyApp extends StatelessWidget {
                     Provider.of<AccountRepository>(context, listen: false))),
       ],
       child: MaterialApp(
-          title: 'Flutter example',
-          theme: CustomThemeData.light,
-          initialRoute: "/home",
-          routes: <String, WidgetBuilder>{
-            "/home": (BuildContext context) => Home(),
-            "/login": (BuildContext context) => Login(),
-          },
-          onGenerateRoute: (settings) {
-            if (settings.name == '/profile') {
-              final args = settings.arguments as UserPageArguments;
-              return MaterialPageRoute(
-                builder: (context) => UserPage(userId: UserId(id: args.userId)),
-              );
-            }
-            return null;
-          }),
+        title: "posttree",
+        theme: CustomThemeData.light,
+        initialRoute: "/home",
+        routes: <String, WidgetBuilder>{
+          "/home": (BuildContext context) => Home(),
+          "/login": (BuildContext context) => Login(),
+        },
+        onGenerateRoute: (settings) {
+          if (settings.name == '/profile') {
+            final args = settings.arguments as UserPageArguments;
+            return MaterialPageRoute(
+              builder: (context) => UserPage(userId: UserId(id: args.userId)),
+            );
+          }
+          return null;
+        },
+        builder: EasyLoading.init(),
+      ),
     );
   }
 }
 
 void configLoading() {
+  // https://github.com/jogboms/flutter_spinkit#-showcase
   EasyLoading.instance
     ..displayDuration = const Duration(milliseconds: 2000)
     ..indicatorType = EasyLoadingIndicatorType.fadingCircle
     ..loadingStyle = EasyLoadingStyle.dark
-    ..indicatorSize = 45.0
-    ..radius = 10.0
-    ..progressColor = Colors.yellow
-    ..backgroundColor = Colors.green
-    ..indicatorColor = Colors.yellow
-    ..textColor = Colors.yellow
+    ..indicatorSize = 128.0
+    ..radius = 24.0
     ..maskColor = Colors.blue.withOpacity(0.5)
     ..userInteractions = true
     ..dismissOnTap = false;

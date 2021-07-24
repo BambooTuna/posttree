@@ -30,7 +30,6 @@ class Login extends StatelessWidget {
         ),
         body: LoginBody(),
       ),
-      builder: EasyLoading.init(),
     );
   }
 }

@@ -33,7 +33,6 @@ class Home extends StatelessWidget {
         body: HomeBody(),
         floatingActionButton: _HomeFloatingActionButton(),
       ),
-      builder: EasyLoading.init(),
     );
   }
 }

@@ -63,7 +63,6 @@ class PostFormViewModel extends ChangeNotifier {
 
   @override
   void dispose() {
-    print("dispose");
     // streamを必ず閉じる
     _eventAction.close();
     super.dispose();

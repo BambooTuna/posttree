@@ -88,6 +88,7 @@ class _PostFormState extends State<PostForm> {
 
   @override
   void dispose() {
+    // broadcast streamをlistenしている場合は毎回subscriptionを閉じないといけない
     _subscription.cancel();
     super.dispose();
   }

@@ -57,7 +57,6 @@ class UserPage extends StatelessWidget {
         endDrawer: UserSettingWidget(),
         // backgroundColor: Theme.of(context).backgroundColor,
       ),
-      builder: EasyLoading.init(),
     );
   }
 }
