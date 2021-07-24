@@ -20,6 +20,7 @@ class Home extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => PostFormViewModel()),
       ],
       child: Scaffold(
+        resizeToAvoidBottomInset: true,
         backgroundColor: Theme.of(context).scaffoldBackgroundColor,
         appBar: AppBar(
           title: Text(

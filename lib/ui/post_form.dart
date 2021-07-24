@@ -19,7 +19,9 @@ Future<void> openPostFormModal(BuildContext context) => showModalBottomSheet(
       return ChangeNotifierProvider.value(
         value: viewModel,
         child: SingleChildScrollView(
-            child: Container(
+            child: AnimatedPadding(
+          duration: Duration(milliseconds: 150),
+          curve: Curves.easeOut,
           padding:
               EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
           child: PostForm(),
@@ -56,37 +58,39 @@ class _PostFormState extends State<PostForm> {
   @override
   Widget build(BuildContext context) {
     final viewModel = Provider.of<PostFormViewModel>(context);
-    return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        mainAxisSize: MainAxisSize.min,
-        children: <Widget>[
-          Text("まだ投稿はできないけど、投稿できる場所だよ"),
-          Text(
-            viewModel.errorMessage ?? "",
-            style: Theme.of(context)
-                .textTheme
-                .bodyText1
-                ?.copyWith(color: Theme.of(context).errorColor),
-          ),
-          TextFormField(
-              autofocus: true,
-              initialValue: _initialValue,
-              decoration: InputDecoration(
-                border: InputBorder.none,
-                hintText: "何か入力してね",
-              ),
-              onChanged: (text) {
-                viewModel.setContent(text);
-              }),
-          ElevatedButton(
-            child: Text("Send: " + viewModel.content),
-            onPressed: () {
-              viewModel.send();
-            },
-          ),
-          SizedBox(height: 48),
-        ],
+    return Container(
+      child: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          mainAxisSize: MainAxisSize.min,
+          children: <Widget>[
+            Text("まだ投稿はできないけど、投稿できる場所だよ"),
+            Text(
+              viewModel.errorMessage ?? "",
+              style: Theme.of(context)
+                  .textTheme
+                  .bodyText1
+                  ?.copyWith(color: Theme.of(context).errorColor),
+            ),
+            TextFormField(
+                autofocus: true,
+                initialValue: _initialValue,
+                decoration: InputDecoration(
+                  border: InputBorder.none,
+                  hintText: "何か入力してね",
+                ),
+                onChanged: (text) {
+                  viewModel.setContent(text);
+                }),
+            ElevatedButton(
+              child: Text("Send: " + viewModel.content),
+              onPressed: () {
+                viewModel.send();
+              },
+            ),
+            SizedBox(height: 48),
+          ],
+        ),
       ),
     );
   }
