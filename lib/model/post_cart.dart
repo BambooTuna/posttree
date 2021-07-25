@@ -45,8 +45,10 @@ class PostCart extends ChangeNotifier {
     if (!this._editMode) {
       return;
     }
-    _createArticleAction.sink.add(Article(
-        id: randomString(10), author: defaultUser(), posts: {...this._items}));
+    if (this._items.isNotEmpty) {
+      _createArticleAction.sink.add(Article(
+          id: randomString(10), author: defaultUser(), posts: {...this._items}));
+    }
     this._editMode = false;
     this._items.clear();
     notifyListeners();
