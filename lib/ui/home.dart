@@ -141,33 +141,51 @@ class _HomeBodyState extends State<HomeBody> {
       var postCart = watch(postCartProvider);
       var timelinePostTableViewModel =
           watch(timelinePostTableViewModelProvider);
+
+      bool willAccept = false;
       return Column(
         children: [
           DragTarget<Post>(
-            // ドラッグ先の領域
             builder: (context, accepted, rejected) {
-              return Container(
-                decoration: BoxDecoration(
-                  border: Border.all(
-                      // color: _willAccepted ? Colors.orange : Colors.transparent,
-                      // width: _willAccepted ? 1 : 1,
-                      ),
-                ),
-                height: 300,
-                child: Center(
-                  child: Image.network(
-                      'https://4.bp.blogspot.com/-6Sr0RZ5rlAQ/UYh8w3M6Z_I/AAAAAAAARRY/_c7ewyEIZYY/s400/shinkai_ryugunotsukai.png'),
+              return Padding(
+                padding: EdgeInsets.all(5),
+                child: SizedBox(
+                  width: double.infinity,
+                  child: OutlinedButton(
+                    child: Text(postCart.editMode
+                        ? "まとめるモード (${postCart.count})"
+                        : "通常モード"),
+                    style: OutlinedButton.styleFrom(
+                      primary: Colors.black,
+                      shape: const StadiumBorder(),
+                      backgroundColor: willAccept ? Colors.redAccent : null,
+                      side: BorderSide(
+                          color: postCart.editMode
+                              ? Colors.redAccent
+                              : Colors.green),
+                    ),
+                    onPressed: () {
+                      if (!postCart.editMode) {
+                        postCart.switchToEditMode();
+                      } else {
+                        postCart.summarize();
+                      }
+                    },
+                  ),
                 ),
               );
             },
-            // ③
             onWillAccept: (data) {
+              willAccept = true;
               return true;
             },
             onAccept: (data) {
+              willAccept = false;
               postCart.add(data);
             },
-            onLeave: (data) {},
+            onLeave: (data) {
+              willAccept = false;
+            },
           ),
           Expanded(
             child: RefreshableItemTable(
@@ -184,8 +202,8 @@ class _HomeBodyState extends State<HomeBody> {
                         data: e,
                         child: card,
                         feedback: Icon(
-                          Icons.satellite,
-                          size: 128,
+                          Icons.mail,
+                          size: 86,
                         ),
                         childWhenDragging: Opacity(
                           opacity: 0.5, // 完全に透明にする

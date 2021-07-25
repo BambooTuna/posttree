@@ -4,6 +4,7 @@ import 'package:posttree/model/post.dart';
 class PostCart extends ChangeNotifier {
   Set<Post> _items = {};
   Set<Post> get items => _items;
+  int get count => _items.length;
   // bool get exist => _items.contains(_items);
 
   bool _editMode = false;

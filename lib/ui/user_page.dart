@@ -120,20 +120,6 @@ class _UserPageBodyState extends State<UserPageBody> {
           user.userName.value,
           style: Theme.of(context).textTheme.headline6,
         ),
-        Text(
-          "まとめるモード",
-          style: Theme.of(context).textTheme.bodyText2,
-        ),
-        Switch(
-          value: postCart.editMode,
-          onChanged: (value) {
-            if (value) {
-              postCart.switchToEditMode();
-            } else {
-              postCart.summarize();
-            }
-          },
-        ),
         SizedBox(height: 24),
         Expanded(
             child: TabBarWidget(tabs: [
