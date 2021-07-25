@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:posttree/main.dart';
+import 'package:posttree/model/post.dart';
+import 'package:posttree/model/post_cart.dart';
 import 'package:posttree/ui/post_form.dart';
 import 'package:posttree/ui/user_page.dart';
-import 'package:posttree/view_model/authenticate.dart';
 import 'package:posttree/view_model/home.dart';
 import 'package:posttree/view_model/post_form.dart';
 import 'package:posttree/view_model/post_tables.dart';
@@ -13,6 +14,9 @@ import 'package:posttree/widget/user_icon.dart';
 
 final homeViewModelProvider = ChangeNotifierProvider(
   (ref) => HomeViewModel(),
+);
+final postCartProvider = ChangeNotifierProvider(
+  (ref) => PostCart(),
 );
 final timelinePostTableViewModelProvider = ChangeNotifierProvider(
   (ref) => TimelinePostTableViewModel(),
@@ -68,14 +72,13 @@ class _UserSmallIconState extends State<UserSmallIcon> {
           iconUrl: iconUrl,
         );
       } else {
-        return UserIconWidget(
-          iconSize: 48.0,
-          radius: 20,
-          onTap: () {
+        return IconButton(
+          padding: new EdgeInsets.all(0.0),
+          icon: Icon(Icons.account_circle, size: 48.0),
+          color: Theme.of(context).buttonColor,
+          onPressed: () {
             Navigator.of(context).pushNamed("/login");
           },
-          iconUrl:
-              "https://cdn.pixabay.com/photo/2013/07/12/19/24/anonymous-154716_1280.png",
         );
       }
     });
@@ -135,15 +138,64 @@ class _HomeBodyState extends State<HomeBody> {
   Widget build(BuildContext context) {
     return Consumer(builder: (context, watch, child) {
       var viewModel = context.read(homeViewModelProvider);
+      var postCart = watch(postCartProvider);
       var timelinePostTableViewModel =
           watch(timelinePostTableViewModelProvider);
       return Column(
         children: [
+          DragTarget<Post>(
+            // ドラッグ先の領域
+            builder: (context, accepted, rejected) {
+              return Container(
+                decoration: BoxDecoration(
+                  border: Border.all(
+                      // color: _willAccepted ? Colors.orange : Colors.transparent,
+                      // width: _willAccepted ? 1 : 1,
+                      ),
+                ),
+                height: 300,
+                child: Center(
+                  child: Image.network(
+                      'https://4.bp.blogspot.com/-6Sr0RZ5rlAQ/UYh8w3M6Z_I/AAAAAAAARRY/_c7ewyEIZYY/s400/shinkai_ryugunotsukai.png'),
+                ),
+              );
+            },
+            // ③
+            onWillAccept: (data) {
+              return true;
+            },
+            onAccept: (data) {
+              postCart.add(data);
+            },
+            onLeave: (data) {},
+          ),
           Expanded(
             child: RefreshableItemTable(
-              items: timelinePostTableViewModel.items
-                  .map((e) => PostCard(item: e))
-                  .toList(),
+              items: timelinePostTableViewModel.items.map((e) {
+                final card = PostCard(item: e);
+                if (postCart.exist(e)) {
+                  return Opacity(
+                    opacity: 0.5,
+                    child: card,
+                  );
+                } else {
+                  if (postCart.editMode) {
+                    return Draggable(
+                        data: e,
+                        child: card,
+                        feedback: Icon(
+                          Icons.satellite,
+                          size: 128,
+                        ),
+                        childWhenDragging: Opacity(
+                          opacity: 0.5, // 完全に透明にする
+                          child: card,
+                        ));
+                  } else {
+                    return card;
+                  }
+                }
+              }).toList(),
               onRefresh: () {
                 return timelinePostTableViewModel.load(viewModel.user.userId);
               },

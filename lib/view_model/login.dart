@@ -15,7 +15,7 @@ class LoginViewModel extends ChangeNotifier {
   UiState get uiState => _uiState;
   bool get isLogging => uiState == UiState.Loading;
 
-  var _loginSuccessAction = StreamController<Event>();
+  var _loginSuccessAction = StreamController<Event>.broadcast();
   StreamController<Event> get loginSuccessAction => _loginSuccessAction;
 
   void signInWithGoogle() async {

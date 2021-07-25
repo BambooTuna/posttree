@@ -4,31 +4,23 @@ import 'colors.dart';
 
 class CustomThemeData {
   static ThemeData light = ThemeData(
-      brightness: Brightness.light,
-      indicatorColor: Colors.greenAccent,
-      tabBarTheme: TabBarTheme(
-          indicatorSize: TabBarIndicatorSize.tab,
-          indicator: BoxDecoration(
-              borderRadius: BorderRadius.circular(50), // Creates border
-              color: Colors.greenAccent),
-          labelColor: Colors.black,
-          unselectedLabelColor: Colors.blueGrey)
-
-      // primaryColor: ThemeColors.primaryColor,
-      // accentColor: ThemeColors.secondaryColor,
-      // cardColor: ThemeColors.quaternaryColor,
-      //
-      // // Define the default font family.
-      // fontFamily: 'Georgia',
-      //
-      // // Define the default TextTheme. Use this to specify the default
-      // // text styling for headlines, titles, bodies of text, and more.
-      // textTheme: TextTheme(
-      //   headline1: TextStyle(fontSize: 72.0, fontWeight: FontWeight.bold),
-      //   headline6: TextStyle(fontSize: 36.0, fontStyle: FontStyle.italic),
-      //   bodyText2: TextStyle(fontSize: 14.0, fontFamily: 'Hind'),
-      // )
-      );
+    brightness: Brightness.light,
+    // indicatorColor: ThemeColors.secondaryColor,
+    // tabBarTheme: TabBarTheme(
+    //     indicatorSize: TabBarIndicatorSize.tab,
+    //     // indicator: BoxDecoration(
+    //     //     borderRadius: BorderRadius.circular(50), // Creates border
+    //     //     color: ThemeColors.secondaryColor),
+    //     labelColor: ThemeColors.primaryTextColor,
+    //     unselectedLabelColor: Colors.blueGrey),
+    // buttonColor: ThemeColors.quaternaryColor,
+    //
+    // primaryColor: ThemeColors.primaryColor,
+    // accentColor: ThemeColors.secondaryColor,
+    // // cardColor: ThemeColors.quaternaryColor,
+    //
+    // fontFamily: 'Georgia',
+  );
 }
 
 // import 'colors.dart';

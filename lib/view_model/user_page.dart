@@ -4,7 +4,7 @@ import 'package:posttree/model/user.dart';
 import 'package:posttree/utils/event.dart';
 
 class UserPageViewModel extends ChangeNotifier {
-  var _eventAction = StreamController<Event>();
+  var _eventAction = StreamController<Event>.broadcast();
   StreamController<Event> get eventAction => _eventAction;
 
   User? _user;

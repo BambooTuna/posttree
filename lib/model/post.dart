@@ -10,4 +10,19 @@ class Post {
       required this.user,
       required this.message,
       required this.isMine});
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) {
+      return true;
+    }
+    if (other is Post) {
+      return this.runtimeType == other.runtimeType && this.id == other.id;
+    } else {
+      return false;
+    }
+  }
+
+  @override
+  int get hashCode => super.hashCode;
 }

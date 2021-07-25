@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -37,12 +39,14 @@ class LoginBody extends StatefulWidget {
 }
 
 class _LoginBodyState extends State<LoginBody> {
+  late StreamSubscription<Event> _subscription;
+
   @override
   void initState() {
     super.initState();
 
     var viewModel = context.read(loginViewModelProvider);
-    viewModel.loginSuccessAction.stream.listen((event) {
+    _subscription = viewModel.loginSuccessAction.stream.listen((event) {
       EasyLoading.dismiss();
       switch (event.runtimeType) {
         case EventSuccess:
@@ -59,6 +63,13 @@ class _LoginBodyState extends State<LoginBody> {
     return Center(
       child: _LoginButton(),
     );
+  }
+
+  @override
+  void dispose() {
+    // broadcast streamをlistenしている場合は毎回subscriptionを閉じないといけない
+    _subscription.cancel();
+    super.dispose();
   }
 }
 
@@ -82,6 +93,7 @@ class _LoginButton extends StatelessWidget {
                   }
                 },
               ),
+              Divider(),
               SignInButton(
                 Buttons.Twitter,
                 text: signInWithTwitter,

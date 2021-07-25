@@ -1,4 +1,5 @@
-import 'package:cached_network_image/cached_network_image.dart';
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:posttree/const/user_page.dart';
@@ -12,6 +13,8 @@ import 'package:posttree/widget/tabbar.dart';
 import 'package:posttree/widget/user_icon.dart';
 import 'package:posttree/widget/user_setting.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+
+import 'home.dart';
 
 class UserPageArguments {
   final String userId;
@@ -73,13 +76,15 @@ class _UserPageBodyState extends State<UserPageBody> {
   final UserId userId;
   _UserPageBodyState({required this.userId});
 
+  late StreamSubscription<Event> _subscription;
+
   @override
   void initState() {
     super.initState();
 
     EasyLoading.show(status: loadingText);
     var userPageViewModel = context.read(userPageViewModelProvider);
-    userPageViewModel.eventAction.stream.listen((event) {
+    _subscription = userPageViewModel.eventAction.stream.listen((event) {
       EasyLoading.dismiss();
       switch (event.runtimeType) {
         case EventSuccess:
@@ -99,6 +104,7 @@ class _UserPageBodyState extends State<UserPageBody> {
   Widget build(BuildContext context) {
     return Consumer(builder: (context, watch, child) {
       var userPageViewModel = watch(userPageViewModelProvider);
+      var postCart = watch(postCartProvider);
       var userPostTableViewModel = watch(userPostTableViewModelProvider);
       var draftPostTableViewModel = watch(draftPostTableViewModelProvider);
       var user = userPageViewModel.user ?? defaultUser();
@@ -113,6 +119,20 @@ class _UserPageBodyState extends State<UserPageBody> {
         Text(
           user.userName.value,
           style: Theme.of(context).textTheme.headline6,
+        ),
+        Text(
+          "まとめるモード",
+          style: Theme.of(context).textTheme.bodyText2,
+        ),
+        Switch(
+          value: postCart.editMode,
+          onChanged: (value) {
+            if (value) {
+              postCart.switchToEditMode();
+            } else {
+              postCart.summarize();
+            }
+          },
         ),
         SizedBox(height: 24),
         Expanded(
@@ -159,5 +179,12 @@ class _UserPageBodyState extends State<UserPageBody> {
         ]))
       ]);
     });
+  }
+
+  @override
+  void dispose() {
+    // broadcast streamをlistenしている場合は毎回subscriptionを閉じないといけない
+    _subscription.cancel();
+    super.dispose();
   }
 }
