@@ -13,6 +13,8 @@ import 'package:posttree/widget/post_card.dart';
 import 'package:posttree/widget/refreshable_post_table.dart';
 import 'package:posttree/widget/user_icon.dart';
 
+import 'article.dart';
+
 final homeViewModelProvider = ChangeNotifierProvider(
   (ref) => HomeViewModel(),
 );
@@ -133,6 +135,13 @@ class _HomeBodyState extends State<HomeBody> {
     var timelinePostTableViewModel =
         context.read(timelinePostTableViewModelProvider);
     timelinePostTableViewModel.load(viewModel.user.userId);
+
+    var postCart = context.read(postCartProvider);
+    postCart.createArticleAction.stream.listen((article) {
+      Navigator.of(context).push(MaterialPageRoute(builder: (context) {
+        return ArticleScreen(article: article);
+      }));
+    });
   }
 
   @override

@@ -28,3 +28,27 @@ class RefreshableItemTable extends StatelessWidget {
         ));
   }
 }
+
+class StaticItemTable extends StatelessWidget {
+  final List<Widget> items;
+  final Widget? lastWidget;
+  StaticItemTable({required this.items, this.lastWidget});
+
+  @override
+  Widget build(BuildContext context) {
+    final _items = this.lastWidget == null
+        ? this.items
+        : [...this.items, this.lastWidget!];
+    return ListView.separated(
+      physics: AlwaysScrollableScrollPhysics(),
+      padding: EdgeInsets.all(5),
+      itemCount: _items.length,
+      itemBuilder: (BuildContext context, int i) {
+        return _items[i];
+      },
+      separatorBuilder: (BuildContext context, int index) {
+        return SizedBox(height: 10);
+      },
+    );
+  }
+}

@@ -1,11 +1,16 @@
+import 'dart:async';
+
 import 'package:flutter/cupertino.dart';
 import 'package:posttree/model/post.dart';
+import 'package:posttree/model/user.dart';
+import 'package:posttree/utils/random.dart';
+
+import 'article.dart';
 
 class PostCart extends ChangeNotifier {
   Set<Post> _items = {};
   Set<Post> get items => _items;
   int get count => _items.length;
-  // bool get exist => _items.contains(_items);
 
   bool _editMode = false;
   bool get editMode => _editMode;
@@ -14,6 +19,9 @@ class PostCart extends ChangeNotifier {
     print(_items.contains(item));
     return _items.contains(item);
   }
+
+  var _createArticleAction = StreamController<Article>();
+  StreamController<Article> get createArticleAction => _createArticleAction;
 
   switchToEditMode() {
     if (this._editMode) {
@@ -37,7 +45,8 @@ class PostCart extends ChangeNotifier {
     if (!this._editMode) {
       return;
     }
-    print(this._items);
+    _createArticleAction.sink.add(Article(
+        id: randomString(10), author: defaultUser(), posts: {...this._items}));
     this._editMode = false;
     this._items.clear();
     notifyListeners();
@@ -45,6 +54,7 @@ class PostCart extends ChangeNotifier {
 
   @override
   void dispose() {
+    _createArticleAction.close();
     super.dispose();
   }
 }
