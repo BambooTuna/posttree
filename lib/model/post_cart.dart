@@ -28,6 +28,11 @@ class PostCart extends ChangeNotifier {
     notifyListeners();
   }
 
+  del(Post item) {
+    this._items.remove(item);
+    notifyListeners();
+  }
+
   summarize() {
     if (!this._editMode) {
       return;

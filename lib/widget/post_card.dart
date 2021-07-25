@@ -18,26 +18,43 @@ class PostCard extends StatelessWidget {
       },
       iconUrl: item.user.userIconImage.value,
     );
-    return Card(
-      color: Theme.of(context).cardTheme.color,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(10),
-      ),
-      child: Padding(
-        padding: EdgeInsets.all(12),
-        child: ListTile(
-          leading: item.isMine ? null : userIcon,
-          title: Row(children: <Widget>[
-            Text(
-              item.user.userName.value,
-              style: Theme.of(context).textTheme.headline6,
-            ),
-          ]),
-          subtitle: Text(
-            item.message,
-            style: Theme.of(context).textTheme.subtitle1,
-          ),
-          trailing: item.isMine ? userIcon : null,
+
+    return SizedBox(
+      width: MediaQuery.of(context).size.width,
+      child: Card(
+        color: Theme.of(context).cardTheme.color,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(10),
+        ),
+        child: Padding(
+          padding: EdgeInsets.all(12),
+          child: Row(
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: <Widget>[
+                item.isMine ? Container() : userIcon,
+                Expanded(
+                    child: Padding(
+                  padding: EdgeInsets.all(12),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.max,
+                    children: <Widget>[
+                      Row(
+                        children: [
+                          Text(
+                            item.user.userName.value,
+                            style: Theme.of(context).textTheme.headline6,
+                          ),
+                        ],
+                      ),
+                      Text(
+                        item.message,
+                        style: Theme.of(context).textTheme.subtitle1,
+                      )
+                    ],
+                  ),
+                )),
+                item.isMine ? userIcon : Container(),
+              ]),
         ),
       ),
     );

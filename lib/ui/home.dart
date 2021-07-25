@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:posttree/main.dart';
 import 'package:posttree/model/post.dart';
 import 'package:posttree/model/post_cart.dart';
@@ -142,76 +143,78 @@ class _HomeBodyState extends State<HomeBody> {
       var timelinePostTableViewModel =
           watch(timelinePostTableViewModelProvider);
 
-      bool willAccept = false;
       return Column(
         children: [
-          DragTarget<Post>(
-            builder: (context, accepted, rejected) {
-              return Padding(
-                padding: EdgeInsets.all(5),
-                child: SizedBox(
-                  width: double.infinity,
-                  child: OutlinedButton(
-                    child: Text(postCart.editMode
-                        ? "まとめるモード (${postCart.count})"
-                        : "通常モード"),
-                    style: OutlinedButton.styleFrom(
-                      primary: Colors.black,
-                      shape: const StadiumBorder(),
-                      backgroundColor: willAccept ? Colors.redAccent : null,
-                      side: BorderSide(
-                          color: postCart.editMode
-                              ? Colors.redAccent
-                              : Colors.green),
-                    ),
-                    onPressed: () {
-                      if (!postCart.editMode) {
-                        postCart.switchToEditMode();
-                      } else {
-                        postCart.summarize();
-                      }
-                    },
-                  ),
+          Padding(
+            padding: EdgeInsets.all(5),
+            child: SizedBox(
+              width: double.infinity,
+              child: OutlinedButton(
+                child: Text(postCart.editMode
+                    ? "まとめるモード (${postCart.count})"
+                    : "通常モード"),
+                style: OutlinedButton.styleFrom(
+                  primary: Colors.black,
+                  shape: const StadiumBorder(),
+                  side: BorderSide(
+                      color:
+                          postCart.editMode ? Colors.redAccent : Colors.green),
                 ),
-              );
-            },
-            onWillAccept: (data) {
-              willAccept = true;
-              return true;
-            },
-            onAccept: (data) {
-              willAccept = false;
-              postCart.add(data);
-            },
-            onLeave: (data) {
-              willAccept = false;
-            },
+                onPressed: () {
+                  if (!postCart.editMode) {
+                    postCart.switchToEditMode();
+                  } else {
+                    postCart.summarize();
+                  }
+                },
+              ),
+            ),
           ),
           Expanded(
             child: RefreshableItemTable(
               items: timelinePostTableViewModel.items.map((e) {
                 final card = PostCard(item: e);
-                if (postCart.exist(e)) {
+                if (postCart.editMode) {
+                  final exist = postCart.exist(e);
                   return Opacity(
-                    opacity: 0.5,
-                    child: card,
+                    opacity: exist ? 0.5 : 1.0,
+                    child: Dismissible(
+                        key: Key(e.id),
+                        direction: exist
+                            ? DismissDirection.endToStart
+                            : DismissDirection.startToEnd,
+                        onDismissed: (direction) {},
+                        confirmDismiss: (direction) async {
+                          if (direction == DismissDirection.endToStart) {
+                            postCart.del(e);
+                            ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(content: Text('削除しました')));
+                          } else {
+                            postCart.add(e);
+                            ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(content: Text('追加しました')));
+                          }
+                          return false;
+                        },
+                        background: Container(
+                          alignment: Alignment.centerLeft,
+                          color: Colors.greenAccent[200],
+                          child: Padding(
+                              padding: EdgeInsets.fromLTRB(20.0, 0.0, 0.0, 0.0),
+                              child: Icon(Icons.add, color: Colors.white)),
+                        ),
+                        secondaryBackground: Container(
+                          alignment: Alignment.centerRight,
+                          color: Colors.redAccent[200],
+                          child: Padding(
+                            padding: EdgeInsets.fromLTRB(10.0, 0.0, 20.0, 0.0),
+                            child: Icon(Icons.delete, color: Colors.white),
+                          ),
+                        ),
+                        child: card),
                   );
                 } else {
-                  if (postCart.editMode) {
-                    return Draggable(
-                        data: e,
-                        child: card,
-                        feedback: Icon(
-                          Icons.mail,
-                          size: 86,
-                        ),
-                        childWhenDragging: Opacity(
-                          opacity: 0.5, // 完全に透明にする
-                          child: card,
-                        ));
-                  } else {
-                    return card;
-                  }
+                  return card;
                 }
               }).toList(),
               onRefresh: () {
