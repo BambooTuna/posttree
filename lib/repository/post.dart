@@ -125,7 +125,7 @@ class PostRepositoryFirebaseImpl implements PostRepository {
     usersResult.docs.forEach((element) {
       userMap[element.id] = User(DateTime.parse(element.get('created_at')),
           userId: UserId(id: element.get('user_id')),
-          userName: UserName(value: element.get('display_name')),
+          userName: UserName(value: "ここにニックネーム"),
           userIconImage: UserIconImage(value: element.get('photo_url')));
     });
     return List.generate(result.docs.length, (i) {
