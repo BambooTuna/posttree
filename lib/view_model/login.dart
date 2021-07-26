@@ -1,33 +1,38 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:posttree/repository/account.dart';
 import 'package:posttree/utils/state.dart';
 import 'package:posttree/utils/event.dart';
 import 'package:posttree/utils/logger.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import 'authenticate.dart';
+final loginViewModelProvider = ChangeNotifierProvider(
+  (ref) =>
+      LoginViewModel(accountRepository: ref.read(accountRepositoryProvider)),
+);
 
 class LoginViewModel extends ChangeNotifier {
-  final AuthenticateViewModel authenticateViewModel;
-  LoginViewModel({required this.authenticateViewModel});
+  // Static
+  final AccountRepository accountRepository;
+  LoginViewModel({required this.accountRepository});
 
   var _uiState = UiState.Idle;
   UiState get uiState => _uiState;
   bool get isLogging => uiState == UiState.Loading;
 
-  var _loginSuccessAction = StreamController<Event>.broadcast();
-  StreamController<Event> get loginSuccessAction => _loginSuccessAction;
+  var _loginEventAction = StreamController<Event>.broadcast();
+  StreamController<Event> get loginEventAction => _loginEventAction;
 
   void signInWithGoogle() async {
     _uiState = UiState.Loading;
     notifyListeners();
     try {
-      await authenticateViewModel.signInWithGoogle();
-      _loginSuccessAction.sink.add(EventSuccess());
+      await accountRepository.signInWithGoogle();
+      _loginEventAction.sink.add(EventSuccess());
     } catch (e) {
-      logger.warning('Exception');
-      logger.warning('${e.toString()}');
-      _loginSuccessAction.sink.add(EventFailed());
+      logger.warning('Exception: ${e.toString()}');
+      _loginEventAction.sink.add(EventFailed());
     } finally {
       _uiState = UiState.Loaded;
       notifyListeners();
@@ -38,12 +43,11 @@ class LoginViewModel extends ChangeNotifier {
     _uiState = UiState.Loading;
     notifyListeners();
     try {
-      await authenticateViewModel.signInWithTwitter();
-      _loginSuccessAction.sink.add(EventSuccess());
+      await accountRepository.signInWithTwitter();
+      loginEventAction.sink.add(EventSuccess());
     } catch (e) {
-      logger.warning('Exception');
-      logger.warning('${e.toString()}');
-      _loginSuccessAction.sink.add(EventFailed());
+      logger.warning('Exception: ${e.toString()}');
+      loginEventAction.sink.add(EventFailed());
     } finally {
       _uiState = UiState.Loaded;
       notifyListeners();
@@ -53,7 +57,7 @@ class LoginViewModel extends ChangeNotifier {
   @override
   void dispose() {
     // streamを必ず閉じる
-    _loginSuccessAction.close();
+    _loginEventAction.close();
     super.dispose();
   }
 }

@@ -7,6 +7,11 @@ import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:posttree/const/login.dart';
 import 'package:posttree/utils/event.dart';
 import 'package:posttree/utils/state.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+
+final postFormViewModelProvider = ChangeNotifierProvider(
+  (ref) => PostFormViewModel(),
+);
 
 class PostFormViewModel extends ChangeNotifier {
   var _eventAction = StreamController<Event>.broadcast();

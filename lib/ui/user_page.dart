@@ -104,7 +104,6 @@ class _UserPageBodyState extends State<UserPageBody> {
   Widget build(BuildContext context) {
     return Consumer(builder: (context, watch, child) {
       var userPageViewModel = watch(userPageViewModelProvider);
-      var postCart = watch(postCartProvider);
       var userPostTableViewModel = watch(userPostTableViewModelProvider);
       var draftPostTableViewModel = watch(draftPostTableViewModelProvider);
       var user = userPageViewModel.user ?? defaultUser();

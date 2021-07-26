@@ -11,7 +11,6 @@ import 'package:posttree/ui/home.dart';
 import 'package:posttree/ui/login.dart';
 import 'package:posttree/ui/user_page.dart';
 import 'package:posttree/utils/authentication_provider.dart';
-import 'package:posttree/view_model/authenticate.dart';
 import 'package:universal_platform/universal_platform.dart';
 
 void main() async {
@@ -24,16 +23,6 @@ void main() async {
   configLoading();
   runApp(ProviderScope(child: MyApp()));
 }
-
-final accountRepositoryProvider = Provider<AccountRepository>((_) =>
-    AccountRepositoryImpl(
-        authenticationProvider:
-            AuthenticationProvider(firebaseAuth: FirebaseAuth.instance)));
-
-final authenticateViewModelProvider = ChangeNotifierProvider(
-  (ref) => AuthenticateViewModel(
-      accountRepository: ref.read(accountRepositoryProvider)),
-);
 
 class MyApp extends StatelessWidget {
   @override

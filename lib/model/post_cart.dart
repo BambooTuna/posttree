@@ -4,19 +4,22 @@ import 'package:flutter/cupertino.dart';
 import 'package:posttree/model/post.dart';
 import 'package:posttree/model/user.dart';
 import 'package:posttree/utils/random.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'article.dart';
+
+final postCartProvider = ChangeNotifierProvider(
+  (ref) => PostCart(),
+);
 
 class PostCart extends ChangeNotifier {
   Set<Post> _items = {};
   Set<Post> get items => _items;
   int get count => _items.length;
-
   bool _editMode = false;
   bool get editMode => _editMode;
 
   bool exist(Post item) {
-    print(_items.contains(item));
     return _items.contains(item);
   }
 
@@ -47,7 +50,9 @@ class PostCart extends ChangeNotifier {
     }
     if (this._items.isNotEmpty) {
       _createArticleAction.sink.add(Article(
-          id: randomString(10), author: defaultUser(), posts: {...this._items}));
+          id: randomString(10),
+          author: defaultUser(),
+          posts: {...this._items}));
     }
     this._editMode = false;
     this._items.clear();

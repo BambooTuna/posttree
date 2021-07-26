@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_slidable/flutter_slidable.dart';
-import 'package:posttree/main.dart';
-import 'package:posttree/model/post.dart';
 import 'package:posttree/model/post_cart.dart';
 import 'package:posttree/ui/post_form.dart';
 import 'package:posttree/ui/user_page.dart';
@@ -14,19 +12,6 @@ import 'package:posttree/widget/refreshable_post_table.dart';
 import 'package:posttree/widget/user_icon.dart';
 
 import 'article.dart';
-
-final homeViewModelProvider = ChangeNotifierProvider(
-  (ref) => HomeViewModel(),
-);
-final postCartProvider = ChangeNotifierProvider(
-  (ref) => PostCart(),
-);
-final timelinePostTableViewModelProvider = ChangeNotifierProvider(
-  (ref) => TimelinePostTableViewModel(),
-);
-final postFormViewModelProvider = ChangeNotifierProvider(
-  (ref) => PostFormViewModel(),
-);
 
 class Home extends StatelessWidget {
   @override
@@ -64,13 +49,13 @@ class _UserSmallIconState extends State<UserSmallIcon> {
     return Consumer(builder: (context, watch, child) {
       var viewModel = watch(homeViewModelProvider);
       if (viewModel.isLogin) {
-        final iconUrl = viewModel.user.userIconImage.value;
+        final iconUrl = viewModel.selfUser!.userIconImage.value;
         return UserIconWidget(
           iconSize: 48.0,
           radius: 20,
           onTap: () {
             Navigator.of(context).pushNamed("/profile",
-                arguments: UserPageArguments(viewModel.user.userId.id));
+                arguments: UserPageArguments(viewModel.selfUser!.userId.id));
           },
           iconUrl: iconUrl,
         );
@@ -125,18 +110,16 @@ class _HomeBodyState extends State<HomeBody> {
 
     // Listen events by view model.
     var viewModel = context.read(homeViewModelProvider);
-    var authenticateViewModel = context.read(authenticateViewModelProvider);
-    authenticateViewModel.authenticateSuccessAction.stream.listen((user) {
-      viewModel.setUser(user);
+    viewModel.voidEventAction.stream.listen((user) {
+      EasyLoading.dismiss();
     });
-    // authenticateViewModel.signOut();
-    authenticateViewModel.authenticate();
+    viewModel.refreshSelf();
+    viewModel.accountRepository.authState.forEach((element) {
+      viewModel.refreshSelf();
+    });
+    viewModel.refreshTimeline();
 
-    var timelinePostTableViewModel =
-        context.read(timelinePostTableViewModelProvider);
-    timelinePostTableViewModel.load(viewModel.user.userId);
-
-    var postCart = context.read(postCartProvider);
+    final postCart = context.read(postCartProvider);
     postCart.createArticleAction.stream.listen((article) {
       Navigator.of(context).push(MaterialPageRoute(builder: (context) {
         return ArticleScreen(article: article);
@@ -147,11 +130,8 @@ class _HomeBodyState extends State<HomeBody> {
   @override
   Widget build(BuildContext context) {
     return Consumer(builder: (context, watch, child) {
-      var viewModel = context.read(homeViewModelProvider);
-      var postCart = watch(postCartProvider);
-      var timelinePostTableViewModel =
-          watch(timelinePostTableViewModelProvider);
-
+      final viewModel = watch(homeViewModelProvider);
+      final postCart = watch(postCartProvider);
       return Column(
         children: [
           Padding(
@@ -181,7 +161,7 @@ class _HomeBodyState extends State<HomeBody> {
           ),
           Expanded(
             child: RefreshableItemTable(
-              items: timelinePostTableViewModel.items.map((e) {
+              items: viewModel.timelineItems.map((e) {
                 final card = PostCard(item: e);
                 if (postCart.editMode) {
                   final exist = postCart.exist(e);
@@ -227,7 +207,7 @@ class _HomeBodyState extends State<HomeBody> {
                 }
               }).toList(),
               onRefresh: () {
-                return timelinePostTableViewModel.load(viewModel.user.userId);
+                return viewModel.refreshTimeline();
               },
               lastWidget: Center(
                   child: Text(

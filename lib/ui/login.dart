@@ -9,13 +9,6 @@ import 'package:posttree/const/login.dart';
 import 'package:posttree/utils/event.dart';
 import 'package:posttree/view_model/login.dart';
 
-import '../main.dart';
-
-final loginViewModelProvider = ChangeNotifierProvider(
-  (ref) => LoginViewModel(
-      authenticateViewModel: ref.read(authenticateViewModelProvider)),
-);
-
 class Login extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
@@ -46,7 +39,7 @@ class _LoginBodyState extends State<LoginBody> {
     super.initState();
 
     var viewModel = context.read(loginViewModelProvider);
-    _subscription = viewModel.loginSuccessAction.stream.listen((event) {
+    _subscription = viewModel.loginEventAction.stream.listen((event) {
       EasyLoading.dismiss();
       switch (event.runtimeType) {
         case EventSuccess:

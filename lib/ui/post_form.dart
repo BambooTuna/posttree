@@ -8,10 +8,6 @@ import 'package:posttree/utils/event.dart';
 import 'package:posttree/view_model/post_form.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-final postFormViewModelProvider = ChangeNotifierProvider(
-  (ref) => PostFormViewModel(),
-);
-
 Future<void> openPostFormModal(BuildContext context) {
   return showModalBottomSheet(
       context: context,
