@@ -37,6 +37,7 @@ class _LoginBodyState extends State<LoginBody> {
   @override
   void initState() {
     super.initState();
+    EasyLoading.dismiss();
 
     var viewModel = context.read(loginViewModelProvider);
     _subscription = viewModel.loginEventAction.stream.listen((event) {

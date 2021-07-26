@@ -23,7 +23,7 @@ class UserPostTableViewModel extends PostTableViewModel {
     await Future.delayed(Duration(seconds: 1));
     this._items.insert(
         0,
-        Post(
+        Post(DateTime.now(),
             id: randomString(10),
             message: randomString(50),
             user: User(

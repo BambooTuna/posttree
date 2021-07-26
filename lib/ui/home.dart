@@ -79,7 +79,6 @@ class _HomeFloatingActionButton extends StatelessWidget {
     return FloatingActionButton(
       onPressed: () {
         final viewModel = context.read(homeViewModelProvider);
-        final postFormViewModel = context.read(postFormViewModelProvider);
         if (viewModel.isLogin) {
           openPostFormModal(context);
         } else {
@@ -107,13 +106,13 @@ class _HomeBodyState extends State<HomeBody> {
   @override
   void initState() {
     super.initState();
+    EasyLoading.dismiss();
 
     // Listen events by view model.
     var viewModel = context.read(homeViewModelProvider);
     viewModel.voidEventAction.stream.listen((user) {
       EasyLoading.dismiss();
     });
-    viewModel.refreshSelf();
     viewModel.accountRepository.authState.forEach((element) {
       viewModel.refreshSelf();
     });

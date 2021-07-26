@@ -5,11 +5,21 @@ class Post {
   final User user;
   final String message;
   final bool isMine;
-  Post(
+  DateTime createdAt = DateTime.now();
+  Post(this.createdAt,
       {required this.id,
       required this.user,
       required this.message,
       required this.isMine});
+
+  Map<String, dynamic> toMap() {
+    return {
+      'post_id': id,
+      'author_id': user.userId.id,
+      'content': message,
+      'created_at': createdAt.toString(),
+    };
+  }
 
   @override
   bool operator ==(Object other) {

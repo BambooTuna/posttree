@@ -1,16 +1,15 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:path/path.dart';
 import 'package:posttree/model/user.dart';
-import 'package:posttree/repository/account.dart';
 import 'package:posttree/style/text_style.dart';
 import 'package:posttree/ui/home.dart';
 import 'package:posttree/ui/login.dart';
 import 'package:posttree/ui/user_page.dart';
-import 'package:posttree/utils/authentication_provider.dart';
+import 'package:sqflite/sqflite.dart';
 import 'package:universal_platform/universal_platform.dart';
 
 void main() async {
