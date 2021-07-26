@@ -73,7 +73,7 @@ class HomeViewModel extends ChangeNotifier {
 
   Future<void> refreshTimeline() async {
     try {
-      final posts = await postRepository.searchLatest(5);
+      final posts = await postRepository.searchLatest(20);
       this._timelineItems = posts;
       _voidEventAction.sink.add(EventSuccess());
     } catch (e) {
