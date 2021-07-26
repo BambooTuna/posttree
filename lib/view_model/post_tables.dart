@@ -26,9 +26,9 @@ class UserPostTableViewModel extends PostTableViewModel {
         Post(DateTime.now(),
             id: randomString(10),
             message: randomString(50),
-            user: User(
+            user: User(DateTime.now(),
                 userId: UserId(id: userId.id),
-                userName: UserName(value: userId.id),
+                userName: UserName(value: "未実装"),
                 userIconImage: UserIconImage(
                     value:
                         "https://pbs.twimg.com/profile_images/1138564670325792769/lN3Ggmem_400x400.jpg")),

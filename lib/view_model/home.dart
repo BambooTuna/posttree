@@ -38,6 +38,24 @@ class HomeViewModel extends ChangeNotifier {
   List<Post> get timelineItems => _timelineItems;
 
   // Function
+  Future<void> post(String message) async {
+    try {
+      if (this._selfUser != null) {
+        await postRepository.insert(Post(DateTime.now(),
+            id: randomString(10),
+            message: message,
+            user: _selfUser!,
+            isMine: false));
+      }
+      _voidEventAction.sink.add(EventSuccess());
+    } catch (e) {
+      logger.warning('Exception: ${e.toString()}');
+      _voidEventAction.sink.add(EventFailed());
+    } finally {
+      notifyListeners();
+    }
+  }
+
   Future<void> refreshSelf() async {
     try {
       final user =
@@ -55,16 +73,6 @@ class HomeViewModel extends ChangeNotifier {
 
   Future<void> refreshTimeline() async {
     try {
-      await postRepository.insert(Post(DateTime.now(),
-          id: randomString(10),
-          message: randomString(50),
-          user: User(
-              userId: UserId(id: randomString(10)),
-              userName: UserName(value: randomString(5)),
-              userIconImage: UserIconImage(
-                  value:
-                      "https://pbs.twimg.com/profile_images/1138564670325792769/lN3Ggmem_400x400.jpg")),
-          isMine: false));
       final posts = await postRepository.searchLatest(5);
       this._timelineItems = posts;
       _voidEventAction.sink.add(EventSuccess());

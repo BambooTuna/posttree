@@ -22,14 +22,40 @@ class User {
   final UserId userId;
   final UserName userName;
   final UserIconImage userIconImage;
-  User(
+  DateTime createdAt = DateTime.now();
+  User(this.createdAt,
       {required this.userId,
       required this.userName,
       required this.userIconImage});
+
+  Map<String, dynamic> toMap() {
+    return {
+      'user_id': userId.id,
+      'display_name': userName.value,
+      'photo_url': userIconImage.value,
+      'created_at': createdAt.toString(),
+    };
+  }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) {
+      return true;
+    }
+    if (other is User) {
+      return this.runtimeType == other.runtimeType &&
+          this.userId.id == other.userId.id;
+    } else {
+      return false;
+    }
+  }
+
+  @override
+  int get hashCode => super.hashCode;
 }
 
 User defaultUser() {
-  return User(
+  return User(DateTime.now(),
       userId: UserId(id: ""),
       userName: UserName(value: ""),
       userIconImage: UserIconImage(

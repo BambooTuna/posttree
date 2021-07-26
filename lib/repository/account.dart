@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:posttree/model/account.dart';
 import 'package:posttree/model/user.dart';
@@ -21,6 +22,8 @@ abstract class AccountRepository {
 }
 
 class AccountRepositoryImpl implements AccountRepository {
+  FirebaseFirestore firestore = FirebaseFirestore.instance;
+
   final AuthenticationProvider authenticationProvider;
   AccountRepositoryImpl({required this.authenticationProvider});
 
@@ -29,14 +32,20 @@ class AccountRepositoryImpl implements AccountRepository {
 
   @override
   Future<User> verifyUser(ServiceId serviceId) async {
-    final idToken = await authenticationProvider.getIdToken();
-    // TODO: check idToken and get
-    return User(
-        userId: UserId(id: "takeo"),
-        userName: UserName(value: "たけちゃ"),
+    // final idToken = await authenticationProvider.getIdToken();
+    final currentUser = await authenticationProvider.currentUser();
+    final user = User(DateTime.now(),
+        userId: UserId(id: currentUser!.uid),
+        userName: UserName(value: currentUser.displayName ?? "ぽんちゃん"),
         userIconImage: UserIconImage(
-            value:
+            value: currentUser.photoURL ??
                 "https://pbs.twimg.com/profile_images/1138564670325792769/lN3Ggmem_400x400.jpg"));
+    final userDoc =
+        await firestore.collection("users").doc(currentUser.uid).get();
+    if (!userDoc.exists) {
+      await userDoc.reference.set(user.toMap());
+    }
+    return user;
   }
 
   @override

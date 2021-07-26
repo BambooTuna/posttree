@@ -6,14 +6,20 @@ import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:posttree/const/login.dart';
 import 'package:posttree/utils/event.dart';
+import 'package:posttree/utils/logger.dart';
 import 'package:posttree/utils/state.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import 'home.dart';
+
 final postFormViewModelProvider = ChangeNotifierProvider(
-  (ref) => PostFormViewModel(),
+  (ref) => PostFormViewModel(homeViewModel: ref.read(homeViewModelProvider)),
 );
 
 class PostFormViewModel extends ChangeNotifier {
+  final HomeViewModel homeViewModel;
+  PostFormViewModel({required this.homeViewModel});
+
   var _eventAction = StreamController<Event>.broadcast();
   StreamController<Event> get eventAction => _eventAction;
 
@@ -48,28 +54,33 @@ class PostFormViewModel extends ChangeNotifier {
   }
 
   send() async {
-    this.cacheValue();
-    if (!this.validate()) {
-      return;
+    try {
+      this.cacheValue();
+      if (!this.validate()) {
+        return;
+      }
+
+      if (_uiState == UiState.Loading) {
+        return;
+      }
+      EasyLoading.show(status: loadingText);
+      _uiState = UiState.Loading;
+      notifyListeners();
+
+      await homeViewModel.post(_value['content']);
+      await homeViewModel.refreshTimeline();
+      _eventAction.sink.add(EventSuccess());
+    } catch (e) {
+      logger.warning('Exception: ${e.toString()}');
+      _eventAction.sink.add(EventFailed());
+    } finally {
+      this.clearCache();
+      this.resetState();
+      _uiState = UiState.Loaded;
+      notifyListeners();
+
+      EasyLoading.dismiss();
     }
-
-    if (_uiState == UiState.Loading) {
-      return;
-    }
-    EasyLoading.show(status: loadingText);
-    _uiState = UiState.Loading;
-    notifyListeners();
-
-    await Future.delayed(Duration(seconds: 1));
-    // TODO: send _content to server
-    _eventAction.sink.add(EventSuccess());
-
-    this.clearCache();
-    this.resetState();
-    _uiState = UiState.Loaded;
-    notifyListeners();
-
-    EasyLoading.dismiss();
   }
 
   @override

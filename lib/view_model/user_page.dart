@@ -13,7 +13,7 @@ class UserPageViewModel extends ChangeNotifier {
   Future<void> load(UserId userId) async {
     await Future.delayed(Duration(seconds: 1));
     // TODO get user profile
-    final user = User(
+    final user = User(DateTime.now(),
         userId: userId,
         userName: UserName(value: "たけちゃ"),
         userIconImage: UserIconImage(
