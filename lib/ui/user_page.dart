@@ -156,7 +156,7 @@ class _UserPageBodyState extends State<UserPageBody> {
             },
             lastWidget: Center(
                 child: Text(
-              "下書きはここに表示されるよ",
+              "まとめた記事はここに表示されるよ",
               style: Theme.of(context).textTheme.bodyText1,
             )),
           )
