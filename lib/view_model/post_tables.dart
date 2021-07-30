@@ -1,6 +1,8 @@
 import 'package:flutter/cupertino.dart';
+import 'package:posttree/model/article.dart';
 import 'package:posttree/model/post.dart';
 import 'package:posttree/model/user.dart';
+import 'package:posttree/repository/article.dart';
 import 'package:posttree/utils/random.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -8,7 +10,7 @@ abstract class PostTableViewModel extends ChangeNotifier {
   List<Post> _items = [];
   List<Post> get items => _items;
 
-  Future<void> load(UserId userId);
+  Future<void> load(String userId);
 
   @override
   void dispose() {
@@ -19,7 +21,7 @@ abstract class PostTableViewModel extends ChangeNotifier {
 
 class UserPostTableViewModel extends PostTableViewModel {
   @override
-  Future<void> load(UserId userId) async {
+  Future<void> load(String userId) async {
     await Future.delayed(Duration(seconds: 1));
     this._items.insert(
         0,
@@ -27,20 +29,35 @@ class UserPostTableViewModel extends PostTableViewModel {
             id: randomString(10),
             message: randomString(50),
             user: User(DateTime.now(),
-                userId: UserId(id: userId.id),
-                userName: UserName(value: "未実装"),
-                userIconImage: UserIconImage(
-                    value:
-                        "https://pbs.twimg.com/profile_images/1138564670325792769/lN3Ggmem_400x400.jpg")),
-            isMine: false));
+                userId: userId,
+                userName: "未実装",
+                userIconImage: "https://pbs.twimg.com/profile_images/1138564670325792769/lN3Ggmem_400x400.jpg")));
     notifyListeners();
   }
 }
 
-class DraftPostTableViewModel extends PostTableViewModel {
-  @override
-  Future<void> load(UserId userId) async {
-    await Future.delayed(Duration(seconds: 1));
+final articleTableViewModelProvider = ChangeNotifierProvider(
+      (ref) => ArticleTableViewModel(
+      articleRepository: ref.read(articleRepositoryProvider)
+  ),
+);
+
+class ArticleTableViewModel extends ChangeNotifier {
+  final ArticleRepository articleRepository;
+  ArticleTableViewModel({required this.articleRepository});
+
+  List<Article> _items = [];
+  List<Article> get items => _items;
+
+  Future<void> load(String userId) async {
+    final articles = await articleRepository.batchGetByAuthorId(userId);
+    this._items = articles;
     notifyListeners();
+  }
+
+  @override
+  void dispose() {
+    // streamを必ず閉じる
+    super.dispose();
   }
 }

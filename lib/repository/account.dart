@@ -15,10 +15,12 @@ abstract class AccountRepository {
   Future<void> signInWithGoogle();
   Future<void> signInWithTwitter();
 
-  Future<void> signUp(ServiceId serviceId, UserId userId);
+  Future<void> signUp(ServiceId serviceId, String userId);
   Future<User> verifyUser(ServiceId serviceId);
   Future<void> deleteUser(ServiceId serviceId);
   Future<void> signOut();
+
+  Future<User> findUserById(String userId);
 }
 
 class AccountRepositoryImpl implements AccountRepository {
@@ -35,11 +37,10 @@ class AccountRepositoryImpl implements AccountRepository {
     // final idToken = await authenticationProvider.getIdToken();
     final currentUser = await authenticationProvider.currentUser();
     final user = User(DateTime.now(),
-        userId: UserId(id: currentUser!.uid),
-        userName: UserName(value: currentUser.displayName ?? "ぽんちゃん"),
-        userIconImage: UserIconImage(
-            value: currentUser.photoURL ??
-                "https://pbs.twimg.com/profile_images/1138564670325792769/lN3Ggmem_400x400.jpg"));
+        userId: currentUser!.uid,
+        userName: currentUser.displayName ?? "ぽんちゃん",
+        userIconImage: currentUser.photoURL ??
+            "https://pbs.twimg.com/profile_images/1138564670325792769/lN3Ggmem_400x400.jpg");
     final userDoc =
         await firestore.collection("users").doc(currentUser.uid).get();
     if (!userDoc.exists) {
@@ -71,8 +72,16 @@ class AccountRepositoryImpl implements AccountRepository {
   }
 
   @override
-  Future<void> signUp(ServiceId serviceId, UserId userId) {
+  Future<void> signUp(ServiceId serviceId, String userId) {
     // TODO: create user by serviceId and userId
     throw UnimplementedError();
+  }
+
+  @override
+  Future<User> findUserById(String userId) async {
+    final userDoc =
+        await firestore.collection("users").doc(userId).get();
+    var document = userDoc.data() as Map<String, dynamic>;
+    return newUser(document);
   }
 }

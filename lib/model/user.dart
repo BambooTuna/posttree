@@ -1,27 +1,19 @@
 import 'package:flutter/cupertino.dart';
 
-@immutable
-class UserId {
-  final String id;
-  UserId({required this.id});
-}
-
-@immutable
-class UserName {
-  final String value;
-  UserName({required this.value});
-}
-
-@immutable
-class UserIconImage {
-  final String value;
-  UserIconImage({required this.value});
+User newUser(Map<String, dynamic> document) {
+  return User(
+      DateTime.parse(document['created_at']),
+      userId: document['user_id'],
+      // document['display_name']
+      userName: '匿名さん',
+      userIconImage: document['photo_url']
+  );
 }
 
 class User {
-  final UserId userId;
-  final UserName userName;
-  final UserIconImage userIconImage;
+  final String userId;
+  final String userName;
+  final String userIconImage;
   DateTime createdAt = DateTime.now();
   User(this.createdAt,
       {required this.userId,
@@ -30,9 +22,9 @@ class User {
 
   Map<String, dynamic> toMap() {
     return {
-      'user_id': userId.id,
-      'display_name': userName.value,
-      'photo_url': userIconImage.value,
+      'user_id': userId,
+      'display_name': userName,
+      'photo_url': userIconImage,
       'created_at': createdAt.toString(),
     };
   }
@@ -44,7 +36,7 @@ class User {
     }
     if (other is User) {
       return this.runtimeType == other.runtimeType &&
-          this.userId.id == other.userId.id;
+          this.userId == other.userId;
     } else {
       return false;
     }
@@ -56,9 +48,7 @@ class User {
 
 User defaultUser() {
   return User(DateTime.now(),
-      userId: UserId(id: ""),
-      userName: UserName(value: ""),
-      userIconImage: UserIconImage(
-          value:
-              "https://1.bp.blogspot.com/-4tNnDdIsRL4/XSGFxRFKjEI/AAAAAAABTj4/6mcXrJTACacR4w6EkFS6jXb7u2OrG6NwQCLcBGAs/s800/sagi_denwa_oldman.png"));
+      userId: "",
+      userName: "",
+      userIconImage: "https://1.bp.blogspot.com/-4tNnDdIsRL4/XSGFxRFKjEI/AAAAAAABTj4/6mcXrJTACacR4w6EkFS6jXb7u2OrG6NwQCLcBGAs/s800/sagi_denwa_oldman.png");
 }

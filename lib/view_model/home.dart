@@ -1,5 +1,7 @@
 import 'dart:async';
+import 'package:posttree/model/article.dart';
 import 'package:posttree/model/post.dart';
+import 'package:posttree/repository/article.dart';
 import 'package:posttree/repository/post.dart';
 import 'package:posttree/utils/event.dart';
 
@@ -15,6 +17,7 @@ final homeViewModelProvider = ChangeNotifierProvider(
   (ref) => HomeViewModel(
     accountRepository: ref.read(accountRepositoryProvider),
     postRepository: ref.read(postRepositoryProvider),
+    articleRepository: ref.read(articleRepositoryProvider)
   ),
 );
 
@@ -22,8 +25,10 @@ class HomeViewModel extends ChangeNotifier {
   // Static
   final AccountRepository accountRepository;
   final PostRepository postRepository;
+  final ArticleRepository articleRepository;
+
   HomeViewModel(
-      {required this.accountRepository, required this.postRepository});
+      {required this.accountRepository, required this.postRepository, required this.articleRepository});
 
   // Stream
   var _voidEventAction = StreamController<Event>.broadcast();
@@ -44,8 +49,7 @@ class HomeViewModel extends ChangeNotifier {
         await postRepository.insert(Post(DateTime.now(),
             id: randomString(10),
             message: message,
-            user: _selfUser!,
-            isMine: false));
+            user: _selfUser!));
       }
       _voidEventAction.sink.add(EventSuccess());
     } catch (e) {
@@ -54,6 +58,17 @@ class HomeViewModel extends ChangeNotifier {
     } finally {
       notifyListeners();
     }
+  }
+
+  Future<Article> summarize(Set<Post> posts) async {
+    final article = Article(
+        DateTime.now(),
+        id: randomString(10),
+        author: this._selfUser!,
+        posts: posts
+    );
+    await articleRepository.insert(article);
+    return article;
   }
 
   Future<void> refreshSelf() async {
@@ -73,7 +88,7 @@ class HomeViewModel extends ChangeNotifier {
 
   Future<void> refreshTimeline() async {
     try {
-      final posts = await postRepository.searchLatest(20);
+      final posts = await postRepository.searchLatest(30);
       this._timelineItems = posts;
       _voidEventAction.sink.add(EventSuccess());
     } catch (e) {

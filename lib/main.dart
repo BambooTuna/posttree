@@ -38,7 +38,7 @@ class MyApp extends StatelessWidget {
         if (settings.name == '/profile') {
           final args = settings.arguments as UserPageArguments;
           return MaterialPageRoute(
-            builder: (context) => UserPage(userId: UserId(id: args.userId)),
+            builder: (context) => UserPage(userId: args.userId),
           );
         }
         return null;

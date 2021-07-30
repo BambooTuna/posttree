@@ -1,21 +1,28 @@
 import 'package:posttree/model/user.dart';
 
+
+Post newPost(Map<String, dynamic> document) {
+  return Post(
+      DateTime.parse(document['created_at']),
+      id: document['post_id'],
+      user: newUser(document['author']),
+      message: document['content']);
+}
+
 class Post {
   final String id;
   final User user;
   final String message;
-  final bool isMine;
   DateTime createdAt = DateTime.now();
   Post(this.createdAt,
       {required this.id,
       required this.user,
-      required this.message,
-      required this.isMine});
+      required this.message});
 
   Map<String, dynamic> toMap() {
     return {
       'post_id': id,
-      'author_id': user.userId.id,
+      'author': user.toMap(),
       'content': message,
       'created_at': createdAt.toString(),
     };
@@ -35,4 +42,13 @@ class Post {
 
   @override
   int get hashCode => super.hashCode;
+}
+
+Post emptyPost (String id) {
+  return Post(
+    DateTime.now(),
+    id: id,
+    user: defaultUser(),
+    message: '',
+  );
 }

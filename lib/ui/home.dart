@@ -49,13 +49,13 @@ class _UserSmallIconState extends State<UserSmallIcon> {
     return Consumer(builder: (context, watch, child) {
       var viewModel = watch(homeViewModelProvider);
       if (viewModel.isLogin) {
-        final iconUrl = viewModel.selfUser!.userIconImage.value;
+        final iconUrl = viewModel.selfUser!.userIconImage;
         return UserIconWidget(
           iconSize: 48.0,
           radius: 20,
           onTap: () {
             Navigator.of(context).pushNamed("/profile",
-                arguments: UserPageArguments(viewModel.selfUser!.userId.id));
+                arguments: UserPageArguments(viewModel.selfUser!.userId));
           },
           iconUrl: iconUrl,
         );

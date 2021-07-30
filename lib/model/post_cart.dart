@@ -2,17 +2,21 @@ import 'dart:async';
 
 import 'package:flutter/cupertino.dart';
 import 'package:posttree/model/post.dart';
-import 'package:posttree/model/user.dart';
-import 'package:posttree/utils/random.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:posttree/view_model/home.dart';
 
 import 'article.dart';
 
 final postCartProvider = ChangeNotifierProvider(
-  (ref) => PostCart(),
+  (ref) => PostCart(
+      homeViewModel: ref.read(homeViewModelProvider),
+  ),
 );
 
 class PostCart extends ChangeNotifier {
+  final HomeViewModel homeViewModel;
+  PostCart({required this.homeViewModel});
+
   Set<Post> _items = {};
   Set<Post> get items => _items;
   int get count => _items.length;
@@ -44,15 +48,13 @@ class PostCart extends ChangeNotifier {
     notifyListeners();
   }
 
-  summarize() {
+  summarize() async {
     if (!this._editMode) {
       return;
     }
     if (this._items.isNotEmpty) {
-      _createArticleAction.sink.add(Article(
-          id: randomString(10),
-          author: defaultUser(),
-          posts: {...this._items}));
+      final article = await homeViewModel.summarize({...this._items});
+      _createArticleAction.sink.add(article);
     }
     this._editMode = false;
     this._items.clear();

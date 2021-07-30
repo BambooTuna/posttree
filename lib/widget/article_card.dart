@@ -1,11 +1,15 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
+import 'package:posttree/model/article.dart';
 import 'package:posttree/model/post.dart';
+import 'package:posttree/ui/article.dart';
 import 'package:posttree/ui/user_page.dart';
 import 'package:posttree/widget/user_icon.dart';
 
-class PostCard extends StatelessWidget {
-  final Post item;
-  PostCard({required this.item});
+class ArticleCard extends StatelessWidget {
+  final Article item;
+  ArticleCard({required this.item});
 
   @override
   Widget build(BuildContext context) {
@@ -13,10 +17,11 @@ class PostCard extends StatelessWidget {
       iconSize: 48,
       radius: 20,
       onTap: () {
-        Navigator.of(context).pushNamed("/profile",
-            arguments: UserPageArguments(item.user.userId));
+        Navigator.of(context).push(MaterialPageRoute(builder: (context) {
+          return ArticleScreen(article: item);
+        }));
       },
-      iconUrl: item.user.userIconImage,
+      iconUrl: item.author.userIconImage,
     );
 
     return SizedBox(
@@ -41,15 +46,11 @@ class PostCard extends StatelessWidget {
                       Row(
                         children: [
                           Text(
-                            item.user.userName,
+                            '${item.posts.length} 件',
                             style: Theme.of(context).textTheme.headline6,
                           ),
                         ],
                       ),
-                      Text(
-                        item.message,
-                        style: Theme.of(context).textTheme.subtitle1,
-                      )
                     ],
                   ),
                 )),
