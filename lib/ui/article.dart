@@ -12,13 +12,11 @@ class ArticleScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       resizeToAvoidBottomInset: true,
-      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
         title: Text(
           "Article",
           style: Theme.of(context).appBarTheme.titleTextStyle,
         ),
-        backgroundColor: Theme.of(context).appBarTheme.backgroundColor,
       ),
       body: StaticItemTable(
         items: article.posts.map((e) => PostCard(item: e)).toList(),

@@ -7,6 +7,7 @@ Article newArticle(Map<String, dynamic> document) {
       DateTime.parse(document['created_at']),
       id: document['article_id'],
       author: newUser(document['author']),
+      title: document['title'],
       posts: (document['posts'] as List<dynamic>).map((e) => newPost(e as Map<String, dynamic>)).toSet()
   );
 }
@@ -14,16 +15,18 @@ Article newArticle(Map<String, dynamic> document) {
 class Article {
   final String id;
   final User author;
+  final String title;
   final Set<Post> posts;
   DateTime createdAt = DateTime.now();
 
-  Article(this.createdAt, {required this.id, required this.author, required this.posts});
+  Article(this.createdAt, {required this.id, required this.author, required this.title, required this.posts});
 
   Map<String, dynamic> toMap() {
     return {
       'article_id': id,
       'posts': posts.map((e) => e.toMap()).toList(),
       'author': author.toMap(),
+      'title': title,
       'created_at': createdAt.toString(),
     };
   }

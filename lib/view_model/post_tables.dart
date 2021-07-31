@@ -3,6 +3,7 @@ import 'package:posttree/model/article.dart';
 import 'package:posttree/model/post.dart';
 import 'package:posttree/model/user.dart';
 import 'package:posttree/repository/article.dart';
+import 'package:posttree/repository/post.dart';
 import 'package:posttree/utils/random.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -19,19 +20,18 @@ abstract class PostTableViewModel extends ChangeNotifier {
   }
 }
 
+final userPostTableViewModelProvider = ChangeNotifierProvider(
+      (ref) => UserPostTableViewModel(postRepository: ref.read(postRepositoryProvider)),
+);
+
 class UserPostTableViewModel extends PostTableViewModel {
+  PostRepository postRepository;
+  UserPostTableViewModel({required this.postRepository});
+
   @override
   Future<void> load(String userId) async {
-    await Future.delayed(Duration(seconds: 1));
-    this._items.insert(
-        0,
-        Post(DateTime.now(),
-            id: randomString(10),
-            message: randomString(50),
-            user: User(DateTime.now(),
-                userId: userId,
-                userName: "未実装",
-                userIconImage: "https://pbs.twimg.com/profile_images/1138564670325792769/lN3Ggmem_400x400.jpg")));
+    final posts = await postRepository.batchGetByAuthorId(userId);
+    this._items = posts;
     notifyListeners();
   }
 }

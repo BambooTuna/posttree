@@ -17,9 +17,8 @@ class ArticleCard extends StatelessWidget {
       iconSize: 48,
       radius: 20,
       onTap: () {
-        Navigator.of(context).push(MaterialPageRoute(builder: (context) {
-          return ArticleScreen(article: item);
-        }));
+        Navigator.of(context).pushNamed("/profile",
+            arguments: UserPageArguments(item.author.userId));
       },
       iconUrl: item.author.userIconImage,
     );
@@ -31,30 +30,37 @@ class ArticleCard extends StatelessWidget {
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(10),
         ),
-        child: Padding(
-          padding: EdgeInsets.all(12),
-          child: Row(
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: <Widget>[
-                userIcon,
-                Expanded(
-                    child: Padding(
-                  padding: EdgeInsets.all(12),
-                  child: Column(
-                    mainAxisSize: MainAxisSize.max,
-                    children: <Widget>[
-                      Row(
-                        children: [
-                          Text(
-                            '${item.posts.length} 件',
-                            style: Theme.of(context).textTheme.headline6,
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
-                )),
-              ]),
+        child: InkWell(
+          onTap: () {
+            Navigator.of(context).push(MaterialPageRoute(builder: (context) {
+              return ArticleScreen(article: item);
+            }));
+          },
+          child: Padding(
+            padding: EdgeInsets.all(12),
+            child: Row(
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: <Widget>[
+                  userIcon,
+                  Expanded(
+                      child: Padding(
+                        padding: EdgeInsets.all(12),
+                        child: Column(
+                          mainAxisSize: MainAxisSize.max,
+                          children: <Widget>[
+                            Row(
+                              children: [
+                                Text(
+                                  item.title,
+                                  style: Theme.of(context).textTheme.headline6,
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
+                      )),
+                ]),
+          ),
         ),
       ),
     );

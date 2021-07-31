@@ -1,12 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
+import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:posttree/model/post_cart.dart';
 import 'package:posttree/ui/post_form.dart';
 import 'package:posttree/ui/user_page.dart';
 import 'package:posttree/view_model/home.dart';
-import 'package:posttree/view_model/post_form.dart';
-import 'package:posttree/view_model/post_tables.dart';
 import 'package:posttree/widget/post_card.dart';
 import 'package:posttree/widget/refreshable_post_table.dart';
 import 'package:posttree/widget/user_icon.dart';
@@ -18,14 +17,12 @@ class Home extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       resizeToAvoidBottomInset: true,
-      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
         title: Text(
           "Home",
           style: Theme.of(context).appBarTheme.titleTextStyle,
         ),
         leading: UserSmallIcon(),
-        backgroundColor: Theme.of(context).appBarTheme.backgroundColor,
       ),
       body: HomeBody(),
       floatingActionButton: _HomeFloatingActionButton(),
@@ -63,7 +60,6 @@ class _UserSmallIconState extends State<UserSmallIcon> {
         return IconButton(
           padding: new EdgeInsets.all(0.0),
           icon: Icon(Icons.account_circle, size: 48.0),
-          color: Theme.of(context).buttonColor,
           onPressed: () {
             Navigator.of(context).pushNamed("/login");
           },
@@ -152,7 +148,51 @@ class _HomeBodyState extends State<HomeBody> {
                   if (!postCart.editMode) {
                     postCart.switchToEditMode();
                   } else {
-                    postCart.summarize();
+                    showDialog(
+                        context: context,
+                        builder: (context) {
+                          final _formKey = GlobalKey<FormBuilderState>();
+                          return AlertDialog(
+                            title: Text('タイトル'),
+                            content: SizedBox(
+                              height: 100,
+                              child: FormBuilder(
+                                key: _formKey,
+                                autovalidateMode: AutovalidateMode.always,
+                                child: Column(children: <Widget>[
+                                  FormBuilderTextField(
+                                    name: "title",
+                                    autofocus: true,
+                                    validator: FormBuilderValidators.compose([
+                                      FormBuilderValidators.required(context),
+                                      FormBuilderValidators.maxLength(context, 30),
+                                    ]),
+                                    keyboardType: TextInputType.text,
+                                    style: Theme.of(context).textTheme.subtitle1,
+                                  ),
+                                ]),
+                              ),
+                            ),
+                            actions: <Widget>[
+                              TextButton(
+                                child: Text('キャンセル'),
+                                onPressed: () {
+                                  Navigator.pop(context);
+                                },
+                              ),
+                              TextButton(
+                                child: Text('作成'),
+                                onPressed: () {
+                                  if (_formKey.currentState!.saveAndValidate()) {
+                                    Navigator.pop(context);
+                                    postCart.summarize(_formKey.currentState!.value['title']);
+                                  }
+                                  //OKを押したあとの処理
+                                },
+                              ),
+                            ],
+                          );
+                        });
                   }
                 },
               ),

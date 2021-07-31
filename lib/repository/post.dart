@@ -28,7 +28,13 @@ class PostRepositoryFirestoreImpl implements PostRepository {
 
   @override
   Future<List<Post>> batchGetByAuthorId(String id) async {
-    throw UnimplementedError();
+    CollectionReference posts = firestore.collection('posts');
+    final QuerySnapshot<Object?> result =
+    await posts.where('author.user_id', isEqualTo: id).orderBy('created_at', descending: true).get();
+    return List.generate(result.docs.length, (i) {
+      var document = result.docs[i].data() as Map<String, dynamic>;
+      return newPost(document);
+    });
   }
 
   @override

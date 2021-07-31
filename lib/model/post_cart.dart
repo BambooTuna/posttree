@@ -48,12 +48,12 @@ class PostCart extends ChangeNotifier {
     notifyListeners();
   }
 
-  summarize() async {
+  summarize(String title) async {
     if (!this._editMode) {
       return;
     }
     if (this._items.isNotEmpty) {
-      final article = await homeViewModel.summarize({...this._items});
+      final article = await homeViewModel.summarize(title, {...this._items});
       _createArticleAction.sink.add(article);
     }
     this._editMode = false;

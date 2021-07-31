@@ -23,10 +23,6 @@ class UserPageArguments {
   UserPageArguments(this.userId);
 }
 
-final userPostTableViewModelProvider = ChangeNotifierProvider(
-  (ref) => UserPostTableViewModel(),
-);
-
 class UserPage extends StatelessWidget {
   final String userId;
   UserPage({required this.userId});
@@ -35,7 +31,7 @@ class UserPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(userId),
+        // title: Text(userId),
         // backgroundColor: Colors.white.withOpacity(0.0),
         // elevation: 0.0,
         leading: Builder(

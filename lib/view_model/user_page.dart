@@ -20,7 +20,6 @@ class UserPageViewModel extends ChangeNotifier {
   User? get user => _user;
 
   Future<void> load(String userId) async {
-    await Future.delayed(Duration(seconds: 1));
     final user = await accountRepository.findUserById(userId);
     this._user = user;
     _eventAction.sink.add(EventSuccess());

@@ -60,11 +60,12 @@ class HomeViewModel extends ChangeNotifier {
     }
   }
 
-  Future<Article> summarize(Set<Post> posts) async {
+  Future<Article> summarize(String title, Set<Post> posts) async {
     final article = Article(
         DateTime.now(),
         id: randomString(10),
         author: this._selfUser!,
+        title: title,
         posts: posts
     );
     await articleRepository.insert(article);
