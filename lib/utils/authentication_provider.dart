@@ -1,7 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:google_sign_in/google_sign_in.dart';
-import 'package:posttree/model/account.dart';
 import 'package:twitter_login/twitter_login.dart';
 import 'package:universal_platform/universal_platform.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -19,10 +18,10 @@ class AuthenticationProvider {
     return firebaseAuth.currentUser;
   }
 
-  Future<IdToken> getIdToken() async {
+  Future<String> getIdToken() async {
     final user = await currentUser();
     final idToken = await user?.getIdToken();
-    return IdToken(id: idToken!);
+    return idToken!;
   }
 
   Future<UserCredential> signInWithGoogle() async {

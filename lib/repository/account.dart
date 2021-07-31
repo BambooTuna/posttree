@@ -1,6 +1,4 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flutter/cupertino.dart';
-import 'package:posttree/model/account.dart';
 import 'package:posttree/model/user.dart';
 import 'package:posttree/utils/authentication_provider.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -9,15 +7,19 @@ import 'package:posttree/utils/event.dart';
 final accountRepositoryProvider = Provider((ref) => AccountRepositoryImpl(
     authenticationProvider: ref.read(authenticationProvider)));
 
+enum AuthProvider {
+  Google,
+  Twitter
+}
+
 abstract class AccountRepository {
   Stream<Event> get authState;
 
-  Future<void> signInWithGoogle();
-  Future<void> signInWithTwitter();
+  Future<User> signUp(AuthProvider provider);
+  Future<User> signIn(AuthProvider provider);
+  Future<User> currentUser();
 
-  Future<void> signUp(ServiceId serviceId, String userId);
-  Future<User> verifyUser(ServiceId serviceId);
-  Future<void> deleteUser(ServiceId serviceId);
+  Future<void> deleteUser();
   Future<void> signOut();
 
   Future<User> findUserById(String userId);
@@ -33,8 +35,17 @@ class AccountRepositoryImpl implements AccountRepository {
       .map((event) => event != null ? EventSuccess() : EventFailed());
 
   @override
-  Future<User> verifyUser(ServiceId serviceId) async {
-    // final idToken = await authenticationProvider.getIdToken();
+  Future<User> signUp(AuthProvider provider) async {
+    switch (provider) {
+      case AuthProvider.Google:
+        await authenticationProvider.signInWithGoogle();
+        break;
+      case AuthProvider.Twitter:
+        await authenticationProvider.signInWithTwitter();
+        break;
+      default:
+        throw Error();
+    }
     final currentUser = await authenticationProvider.currentUser();
     final user = User(DateTime.now(),
         userId: currentUser!.uid,
@@ -42,7 +53,7 @@ class AccountRepositoryImpl implements AccountRepository {
         userIconImage: currentUser.photoURL ??
             "https://pbs.twimg.com/profile_images/1138564670325792769/lN3Ggmem_400x400.jpg");
     final userDoc =
-        await firestore.collection("users").doc(currentUser.uid).get();
+    await firestore.collection("users").doc(currentUser.uid).get();
     if (!userDoc.exists) {
       await userDoc.reference.set(user.toMap());
     }
@@ -50,31 +61,42 @@ class AccountRepositoryImpl implements AccountRepository {
   }
 
   @override
-  Future<void> deleteUser(ServiceId serviceId) async {
-    await this.signOut();
-    // TODO: delete user from database
-    return this.signOut();
+  Future<User> signIn(AuthProvider provider) async {
+    return await this.signUp(provider);
+    // switch (provider) {
+    //   case AuthProvider.Google:
+    //     await authenticationProvider.signInWithGoogle();
+    //     break;
+    //   case AuthProvider.Twitter:
+    //     await authenticationProvider.signInWithTwitter();
+    //     break;
+    //   default:
+    //     throw Error();
+    // }
+    // final currentUser = await authenticationProvider.currentUser();
+    // final userDoc =
+    //     await firestore.collection("users").doc(currentUser!.uid).get();
+    // return newUser(userDoc.data()!);
+  }
+
+  @override
+  Future<User> currentUser() async {
+    final currentUser = await authenticationProvider.currentUser();
+    final userDoc =
+        await firestore.collection("users").doc(currentUser!.uid).get();
+    return newUser(userDoc.data()!);
+  }
+
+  @override
+  Future<void> deleteUser() async {
+    final currentUser = await authenticationProvider.currentUser();
+    await firestore.collection("users").doc(currentUser!.uid).delete();
+    return await this.signOut();
   }
 
   @override
   Future<void> signOut() {
     return authenticationProvider.signOut();
-  }
-
-  @override
-  Future<void> signInWithGoogle() async {
-    await authenticationProvider.signInWithGoogle();
-  }
-
-  @override
-  Future<void> signInWithTwitter() async {
-    await authenticationProvider.signInWithTwitter();
-  }
-
-  @override
-  Future<void> signUp(ServiceId serviceId, String userId) {
-    // TODO: create user by serviceId and userId
-    throw UnimplementedError();
   }
 
   @override

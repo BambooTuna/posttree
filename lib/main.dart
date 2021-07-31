@@ -35,13 +35,15 @@ class MyApp extends StatelessWidget {
         "/login": (BuildContext context) => Login(),
       },
       onGenerateRoute: (settings) {
-        if (settings.name == '/profile') {
-          final args = settings.arguments as UserPageArguments;
-          return MaterialPageRoute(
-            builder: (context) => UserPage(userId: args.userId),
-          );
+        switch (settings.name) {
+          case '/profile':
+            final args = settings.arguments as UserPageArguments;
+            return MaterialPageRoute(
+              builder: (context) => UserPage(userId: args.userId),
+            );
+          default:
+            Home();
         }
-        return null;
       },
       builder: EasyLoading.init(),
     );

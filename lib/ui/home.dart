@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
@@ -5,6 +7,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:posttree/model/post_cart.dart';
 import 'package:posttree/ui/post_form.dart';
 import 'package:posttree/ui/user_page.dart';
+import 'package:posttree/utils/event.dart';
+import 'package:posttree/view_model/authentication.dart';
 import 'package:posttree/view_model/home.dart';
 import 'package:posttree/widget/post_card.dart';
 import 'package:posttree/widget/refreshable_post_table.dart';
@@ -44,15 +48,15 @@ class _UserSmallIconState extends State<UserSmallIcon> {
   @override
   Widget build(BuildContext context) {
     return Consumer(builder: (context, watch, child) {
-      var viewModel = watch(homeViewModelProvider);
-      if (viewModel.isLogin) {
-        final iconUrl = viewModel.selfUser!.userIconImage;
+      final authenticationViewModel = watch(authenticationViewModelProvider);
+      if (authenticationViewModel.isLogin) {
+        final iconUrl = authenticationViewModel.selfUser!.userIconImage;
         return UserIconWidget(
           iconSize: 48.0,
           radius: 20,
           onTap: () {
             Navigator.of(context).pushNamed("/profile",
-                arguments: UserPageArguments(viewModel.selfUser!.userId));
+                arguments: UserPageArguments(authenticationViewModel.selfUser!.userId));
           },
           iconUrl: iconUrl,
         );
@@ -72,24 +76,26 @@ class _UserSmallIconState extends State<UserSmallIcon> {
 class _HomeFloatingActionButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return FloatingActionButton(
-      onPressed: () {
-        final viewModel = context.read(homeViewModelProvider);
-        if (viewModel.isLogin) {
-          openPostFormModal(context);
-        } else {
-          showDialog(
-              context: context,
-              builder: (context) {
-                return AlertDialog(
-                  title: Text("投稿はログインしてないと使えなさそう。。。"),
-                );
-              }).then((_) => Navigator.of(context).pushNamed("/login"));
-        }
-      },
-      tooltip: 'Increment',
-      child: Icon(Icons.edit),
-    );
+    return Consumer(builder: (context, watch, child) {
+      return FloatingActionButton(
+        onPressed: () {
+          final authenticationViewModel = watch(authenticationViewModelProvider);
+          if (authenticationViewModel.isLogin) {
+            openPostFormModal(context);
+          } else {
+            showDialog(
+                context: context,
+                builder: (context) {
+                  return AlertDialog(
+                    title: Text("投稿はログインしてないと使えなさそう。。。"),
+                  );
+                }).then((_) => Navigator.of(context).pushNamed("/login"));
+          }
+        },
+        tooltip: 'Increment',
+        child: Icon(Icons.edit),
+      );
+    });
   }
 }
 
@@ -99,20 +105,22 @@ class HomeBody extends StatefulWidget {
 }
 
 class _HomeBodyState extends State<HomeBody> {
+  late StreamSubscription<Event> _subscription;
+
   @override
   void initState() {
     super.initState();
     EasyLoading.dismiss();
 
     // Listen events by view model.
+    var authenticationViewModel = context.read(authenticationViewModelProvider);
+    _subscription = authenticationViewModel.listen();
+
     var viewModel = context.read(homeViewModelProvider);
     viewModel.voidEventAction.stream.listen((user) {
       EasyLoading.dismiss();
     });
-    viewModel.accountRepository.authState.forEach((element) {
-      viewModel.refreshSelf();
-    });
-    viewModel.refreshTimeline();
+    viewModel.refreshTimeline(authenticationViewModel.selfUser);
 
     final postCart = context.read(postCartProvider);
     postCart.createArticleAction.stream.listen((article) {
@@ -126,6 +134,7 @@ class _HomeBodyState extends State<HomeBody> {
   Widget build(BuildContext context) {
     return Consumer(builder: (context, watch, child) {
       final viewModel = watch(homeViewModelProvider);
+      final authenticationViewModel = watch(authenticationViewModelProvider);
       final postCart = watch(postCartProvider);
       return Column(
         children: [
@@ -185,7 +194,7 @@ class _HomeBodyState extends State<HomeBody> {
                                 onPressed: () {
                                   if (_formKey.currentState!.saveAndValidate()) {
                                     Navigator.pop(context);
-                                    postCart.summarize(_formKey.currentState!.value['title']);
+                                    postCart.summarize(authenticationViewModel.selfUser, _formKey.currentState!.value['title']);
                                   }
                                   //OKを押したあとの処理
                                 },
@@ -246,7 +255,7 @@ class _HomeBodyState extends State<HomeBody> {
                 }
               }).toList(),
               onRefresh: () {
-                return viewModel.refreshTimeline();
+                return viewModel.refreshTimeline(authenticationViewModel.selfUser);
               },
               lastWidget: Center(
                   child: Text(
@@ -258,5 +267,11 @@ class _HomeBodyState extends State<HomeBody> {
         ],
       );
     });
+  }
+
+  @override
+  void dispose() {
+    _subscription.cancel();
+    super.dispose();
   }
 }

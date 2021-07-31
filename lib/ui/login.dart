@@ -6,6 +6,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_signin_button/button_list.dart';
 import 'package:flutter_signin_button/button_view.dart';
 import 'package:posttree/const/login.dart';
+import 'package:posttree/repository/account.dart';
 import 'package:posttree/utils/event.dart';
 import 'package:posttree/view_model/login.dart';
 
@@ -82,7 +83,7 @@ class _LoginButton extends StatelessWidget {
                 onPressed: () {
                   final viewModel = watch(loginViewModelProvider);
                   if (!viewModel.isLogging) {
-                    viewModel.signInWithGoogle();
+                    viewModel.signIn(AuthProvider.Google);
                     EasyLoading.show(status: loadingText);
                   }
                 },
@@ -94,7 +95,7 @@ class _LoginButton extends StatelessWidget {
                 onPressed: () {
                   final viewModel = watch(loginViewModelProvider);
                   if (!viewModel.isLogging) {
-                    viewModel.signInWithTwitter();
+                    viewModel.signIn(AuthProvider.Twitter);
                     EasyLoading.show(status: loadingText);
                   }
                 },

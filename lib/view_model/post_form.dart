@@ -9,6 +9,7 @@ import 'package:posttree/utils/event.dart';
 import 'package:posttree/utils/logger.dart';
 import 'package:posttree/utils/state.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:posttree/model/user.dart';
 
 import 'home.dart';
 
@@ -53,7 +54,7 @@ class PostFormViewModel extends ChangeNotifier {
     return _formKey.currentState?.validate() ?? false;
   }
 
-  send() async {
+  send(User? user) async {
     try {
       this.cacheValue();
       if (!this.validate()) {
@@ -67,8 +68,8 @@ class PostFormViewModel extends ChangeNotifier {
       _uiState = UiState.Loading;
       notifyListeners();
 
-      await homeViewModel.post(_value['content']);
-      await homeViewModel.refreshTimeline();
+      await homeViewModel.post(user, _value['content']);
+      await homeViewModel.refreshTimeline(user);
       _eventAction.sink.add(EventSuccess());
     } catch (e) {
       logger.warning('Exception: ${e.toString()}');

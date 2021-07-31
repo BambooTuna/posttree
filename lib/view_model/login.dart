@@ -24,30 +24,15 @@ class LoginViewModel extends ChangeNotifier {
   var _loginEventAction = StreamController<Event>.broadcast();
   StreamController<Event> get loginEventAction => _loginEventAction;
 
-  void signInWithGoogle() async {
+  void signIn(AuthProvider provider) async {
     _uiState = UiState.Loading;
     notifyListeners();
     try {
-      await accountRepository.signInWithGoogle();
+      await accountRepository.signIn(provider);
       _loginEventAction.sink.add(EventSuccess());
     } catch (e) {
       logger.warning('Exception: ${e.toString()}');
       _loginEventAction.sink.add(EventFailed());
-    } finally {
-      _uiState = UiState.Loaded;
-      notifyListeners();
-    }
-  }
-
-  void signInWithTwitter() async {
-    _uiState = UiState.Loading;
-    notifyListeners();
-    try {
-      await accountRepository.signInWithTwitter();
-      loginEventAction.sink.add(EventSuccess());
-    } catch (e) {
-      logger.warning('Exception: ${e.toString()}');
-      loginEventAction.sink.add(EventFailed());
     } finally {
       _uiState = UiState.Loaded;
       notifyListeners();

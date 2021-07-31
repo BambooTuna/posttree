@@ -24,6 +24,7 @@ class ArticleRepositoryFirestoreImpl implements ArticleRepository {
     CollectionReference articles = firestore.collection('articles');
     final result = await articles
         .where('author.user_id', isEqualTo: id)
+        .orderBy('created_at', descending: true)
         .get();
     return List.generate(result.docs.length, (i) {
       var document = result.docs[i].data() as Map<String, dynamic>;

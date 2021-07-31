@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:posttree/utils/event.dart';
+import 'package:posttree/view_model/authentication.dart';
 import 'package:posttree/view_model/post_form.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -56,6 +57,8 @@ class _PostFormState extends State<PostForm> {
   Widget build(BuildContext context) {
     return Consumer(builder: (context, watch, child) {
       final viewModel = watch(postFormViewModelProvider);
+      final authenticationViewModel = watch(authenticationViewModelProvider);
+
       final formKey = viewModel.formKey;
       return Container(
         padding: EdgeInsets.all(20),
@@ -85,7 +88,7 @@ class _PostFormState extends State<PostForm> {
                     shape: const StadiumBorder(),
                   ),
                   onPressed: () {
-                    viewModel.send();
+                    viewModel.send(authenticationViewModel.selfUser);
                   },
                 ),
               ],

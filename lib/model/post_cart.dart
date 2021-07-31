@@ -4,6 +4,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:posttree/model/post.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:posttree/view_model/home.dart';
+import 'package:posttree/model/user.dart';
 
 import 'article.dart';
 
@@ -48,12 +49,12 @@ class PostCart extends ChangeNotifier {
     notifyListeners();
   }
 
-  summarize(String title) async {
+  summarize(User? user, String title) async {
     if (!this._editMode) {
       return;
     }
     if (this._items.isNotEmpty) {
-      final article = await homeViewModel.summarize(title, {...this._items});
+      final article = await homeViewModel.summarize(user, title, {...this._items});
       _createArticleAction.sink.add(article);
     }
     this._editMode = false;
