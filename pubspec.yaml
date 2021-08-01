@@ -50,6 +50,8 @@ dependencies:
   sqflite: ^2.0.0+3
   path: ^1.8.0
   cloud_firestore: ^2.4.0
+  flutter_parsed_text: ^2.2.1
+  simple_url_preview: ^3.0.1
 
 dev_dependencies:
   flutter_test:

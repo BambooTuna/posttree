@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_parsed_text/flutter_parsed_text.dart';
 import 'package:posttree/model/post.dart';
 import 'package:posttree/ui/user_page.dart';
 import 'package:posttree/widget/user_icon.dart';
+import 'package:simple_url_preview/simple_url_preview.dart';
 
 class PostCard extends StatelessWidget {
   final Post item;
@@ -30,6 +32,7 @@ class PostCard extends StatelessWidget {
           padding: EdgeInsets.all(12),
           child: Row(
               mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
                 userIcon,
                 Expanded(
@@ -37,8 +40,10 @@ class PostCard extends StatelessWidget {
                   padding: EdgeInsets.all(12),
                   child: Column(
                     mainAxisSize: MainAxisSize.max,
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: <Widget>[
                       Row(
+                        mainAxisAlignment: MainAxisAlignment.start,
                         children: [
                           Text(
                             item.user.userName,
@@ -46,9 +51,35 @@ class PostCard extends StatelessWidget {
                           ),
                         ],
                       ),
-                      Text(
-                        item.message,
-                        style: Theme.of(context).textTheme.subtitle1,
+                      ParsedText(
+                        text: item.message,
+                        style: Theme.of(context).textTheme.bodyText1,
+                        parse: <MatchText>[
+                          MatchText(
+                            pattern: urlPattern,
+                            type: ParsedType.URL,
+                            renderWidget: (
+                                {required String pattern,
+                                required String text}) {
+                              return SimpleUrlPreview(
+                                url: text,
+                                bgColor: Colors.white,
+                                titleLines: 1,
+                                descriptionLines: 2,
+                                imageLoaderColor: Colors.white,
+                                titleStyle:
+                                    Theme.of(context).textTheme.headline6,
+                                descriptionStyle:
+                                    Theme.of(context).textTheme.bodyText1,
+                                siteNameStyle:
+                                    Theme.of(context).textTheme.caption,
+                              );
+                            },
+                            onTap: (url) {
+                              print(url);
+                            },
+                          ),
+                        ],
                       )
                     ],
                   ),
