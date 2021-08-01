@@ -290,6 +290,14 @@ class _HomeBodyState extends State<HomeBody> {
       final PostCart postCart = watch(postCartProvider);
       return Column(
         children: [
+          // TODO
+          Center(
+            child: postCart.editMode
+                ? Text("まとめるモードでは投稿をスワイプしてリストに追加できる\n"
+                    "リストに投稿が入っている状態でもう一度押すと作成できるよ")
+                : Text("右上のボランを押してまとめるモードに移行できるよ"),
+          ),
+          SizedBox(height: 12),
           Expanded(
             child: RefreshableItemTable(
               items: viewModel.timelineItems.map((e) {
