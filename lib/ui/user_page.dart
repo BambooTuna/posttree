@@ -64,7 +64,7 @@ class UserPage extends StatelessWidget {
           ),
           SliverToBoxAdapter(
             child: Center(
-              child: Text("プロフは実証中"),
+              child: Text("プロフは実装中"),
             ),
           )
         ],
