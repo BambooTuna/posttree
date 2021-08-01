@@ -98,16 +98,14 @@ class _UserPageHeaderState extends State<UserPageHeader> {
           iconSize: 100.0,
           radius: 45,
           onTap: () {},
-          iconUrl:
-              "https://pbs.twimg.com/profile_images/1138564670325792769/lN3Ggmem_400x400.jpg",
+          iconUrl: user.userIconImage,
         ),
         background: Stack(
           fit: StackFit.expand,
           children: [
             CachedNetworkImage(
               fit: BoxFit.cover,
-              imageUrl:
-                  "https://pbs.twimg.com/profile_images/1138564670325792769/lN3Ggmem_400x400.jpg",
+              imageUrl: user.userIconImage,
               placeholder: (context, url) => CircularProgressIndicator(),
               errorWidget: (context, url, error) =>
                   Icon(Icons.error, color: Theme.of(context).iconTheme.color),
