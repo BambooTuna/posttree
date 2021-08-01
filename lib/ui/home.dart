@@ -87,7 +87,11 @@ class _UserSmallIconState extends State<UserSmallIcon> {
       } else {
         return IconButton(
           padding: EdgeInsets.all(5),
-          icon: Icon(Icons.account_circle, size: 48.0),
+          icon: Icon(
+            Icons.account_circle,
+            size: 48.0,
+            color: Theme.of(context).iconTheme.color,
+          ),
           onPressed: () {
             Navigator.of(context).pushNamed("/login");
           },
