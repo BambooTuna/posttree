@@ -1,10 +1,11 @@
 import 'dart:async';
+import 'dart:ui';
 
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:posttree/const/user_page.dart';
 import 'package:posttree/model/user.dart';
-import 'package:posttree/repository/article.dart';
 import 'package:posttree/utils/event.dart';
 import 'package:posttree/view_model/post_tables.dart';
 import 'package:posttree/view_model/user_page.dart';
@@ -27,32 +28,98 @@ class UserPage extends StatelessWidget {
   final String userId;
   UserPage({required this.userId});
 
+  final bool _pinned = false;
+  final bool _snap = false;
+  final bool _floating = true;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        // title: Text(userId),
-        // backgroundColor: Colors.white.withOpacity(0.0),
-        // elevation: 0.0,
-        leading: Builder(
-          builder: (BuildContext context) {
-            final ScaffoldState? scaffold = Scaffold.maybeOf(context);
-            final ModalRoute<Object?>? parentRoute = ModalRoute.of(context);
-            final bool hasEndDrawer = scaffold?.hasEndDrawer ?? false;
-            final bool canPop = parentRoute?.canPop ?? false;
-            if (hasEndDrawer && canPop) {
-              return BackButton();
-            } else {
-              return SizedBox.shrink();
-            }
-          },
+      body: NestedScrollView(
+        headerSliverBuilder: (context, innerBoxScrolled) => [
+          SliverAppBar(
+            elevation: 0,
+            pinned: _pinned,
+            snap: _snap,
+            floating: _floating,
+            expandedHeight: 160.0,
+            backgroundColor: Colors.transparent,
+            flexibleSpace: ClipRRect(
+              borderRadius: BorderRadius.vertical(
+                bottom: Radius.circular(24),
+              ),
+              child: UserPageHeader(),
+            ),
+            leading: Builder(
+              builder: (BuildContext context) {
+                final ModalRoute<Object?>? parentRoute = ModalRoute.of(context);
+                final bool canPop = parentRoute?.canPop ?? false;
+                if (canPop) {
+                  return BackButton();
+                } else {
+                  return SizedBox.shrink();
+                }
+              },
+            ),
+          ),
+          SliverToBoxAdapter(
+            child: Center(
+              child: Text("プロフは実証中"),
+            ),
+          )
+        ],
+        body: SafeArea(
+          child: UserPageBody(userId: this.userId),
         ),
       ),
-      // extendBodyBehindAppBar: true,
-      body: UserPageBody(userId: this.userId),
       endDrawer: UserSettingWidget(),
-      // backgroundColor: Theme.of(context).backgroundColor,
     );
+  }
+}
+
+class UserPageHeader extends StatefulWidget {
+  @override
+  _UserPageHeaderState createState() => _UserPageHeaderState();
+}
+
+class _UserPageHeaderState extends State<UserPageHeader> {
+  @override
+  Widget build(BuildContext context) {
+    return Consumer(builder: (context, watch, child) {
+      var userPageViewModel = watch(userPageViewModelProvider);
+      var user = userPageViewModel.user ?? defaultUser();
+      return FlexibleSpaceBar(
+        stretchModes: <StretchMode>[
+          StretchMode.zoomBackground,
+          StretchMode.blurBackground,
+          StretchMode.fadeTitle,
+        ],
+        title: UserIconWidget(
+          iconSize: 100.0,
+          radius: 45,
+          onTap: () {},
+          iconUrl:
+              "https://pbs.twimg.com/profile_images/1138564670325792769/lN3Ggmem_400x400.jpg",
+        ),
+        background: Stack(
+          fit: StackFit.expand,
+          children: [
+            CachedNetworkImage(
+              fit: BoxFit.cover,
+              imageUrl:
+                  "https://pbs.twimg.com/profile_images/1138564670325792769/lN3Ggmem_400x400.jpg",
+              placeholder: (context, url) => CircularProgressIndicator(),
+              errorWidget: (context, url, error) =>
+                  Icon(Icons.error, color: Theme.of(context).iconTheme.color),
+            ),
+            BackdropFilter(
+              filter: ImageFilter.blur(sigmaX: 25.0, sigmaY: 25.0),
+              child: Container(),
+            )
+          ],
+        ),
+      );
+    });
   }
 }
 
@@ -98,65 +165,48 @@ class _UserPageBodyState extends State<UserPageBody> {
   @override
   Widget build(BuildContext context) {
     return Consumer(builder: (context, watch, child) {
-      var userPageViewModel = watch(userPageViewModelProvider);
       var userPostTableViewModel = watch(userPostTableViewModelProvider);
       var articleTableViewModel = watch(articleTableViewModelProvider);
-      var user = userPageViewModel.user ?? defaultUser();
-      return Column(children: [
-        UserIconWidget(
-          iconSize: 160.0,
-          radius: 70,
-          onTap: () {},
-          iconUrl: user.userIconImage,
-        ),
-        SizedBox(height: 12),
-        Text(
-          user.userName,
-          style: Theme.of(context).textTheme.headline6,
-        ),
-        SizedBox(height: 24),
-        Expanded(
-            child: TabBarWidget(tabs: [
-          Tab(
-            icon: Icon(
-              Icons.edit,
-              color: Theme.of(context).iconTheme.color,
-            ),
+      return TabBarWidget(tabs: [
+        Tab(
+          icon: Icon(
+            Icons.edit,
+            color: Theme.of(context).iconTheme.color,
           ),
-          Tab(
-            icon: Icon(
-              Icons.bookmarks,
-              color: Theme.of(context).iconTheme.color,
-            ),
-          )
-        ], children: [
-          RefreshableItemTable(
-            items: userPostTableViewModel.items
-                .map((e) => PostCard(item: e))
-                .toList(),
-            onRefresh: () {
-              return userPostTableViewModel.load(this.userId);
-            },
-            lastWidget: Center(
-                child: Text(
-              "投稿したものはここに表示されるよ",
-              style: Theme.of(context).textTheme.bodyText1,
-            )),
+        ),
+        Tab(
+          icon: Icon(
+            Icons.bookmarks,
+            color: Theme.of(context).iconTheme.color,
           ),
-          RefreshableItemTable(
-            items: articleTableViewModel.items
-                .map((e) => ArticleCard(item: e))
-                .toList(),
-            onRefresh: () {
-              return articleTableViewModel.load(this.userId);
-            },
-            lastWidget: Center(
-                child: Text(
-              "まとめた記事はここに表示されるよ",
-              style: Theme.of(context).textTheme.bodyText1,
-            )),
-          )
-        ]))
+        )
+      ], children: [
+        RefreshableItemTable(
+          items: userPostTableViewModel.items
+              .map((e) => PostCard(item: e))
+              .toList(),
+          onRefresh: () {
+            return userPostTableViewModel.load(this.userId);
+          },
+          lastWidget: Center(
+              child: Text(
+            "投稿したものはここに表示されるよ",
+            style: Theme.of(context).textTheme.bodyText1,
+          )),
+        ),
+        RefreshableItemTable(
+          items: articleTableViewModel.items
+              .map((e) => ArticleCard(item: e))
+              .toList(),
+          onRefresh: () {
+            return articleTableViewModel.load(this.userId);
+          },
+          lastWidget: Center(
+              child: Text(
+            "まとめた記事はここに表示されるよ",
+            style: Theme.of(context).textTheme.bodyText1,
+          )),
+        )
       ]);
     });
   }

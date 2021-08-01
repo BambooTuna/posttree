@@ -17,21 +17,25 @@ class UserIconWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: this.onTap,
-      child: Container(
-        width: this.iconSize,
-        height: this.iconSize,
-        decoration: BoxDecoration(
-          color: Theme.of(context).cardColor,
-          border: Border.all(color: Theme.of(context).cardColor, width: 1.5),
-          borderRadius: BorderRadius.circular(this.radius),
-        ),
-        child: ClipRRect(
-          borderRadius: BorderRadius.circular(this.radius),
-          child: CachedNetworkImage(
-            imageUrl: this.iconUrl,
-            placeholder: (context, url) => CircularProgressIndicator(),
-            errorWidget: (context, url, error) =>
-                Icon(Icons.error, color: Theme.of(context).iconTheme.color),
+      child: FittedBox(
+        fit: BoxFit.fill,
+        child: Container(
+          width: this.iconSize,
+          height: this.iconSize,
+          decoration: BoxDecoration(
+            color: Theme.of(context).cardColor,
+            border: Border.all(color: Theme.of(context).cardColor, width: 1.5),
+            borderRadius: BorderRadius.circular(this.radius),
+          ),
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(this.radius),
+            child: CachedNetworkImage(
+              fit: BoxFit.fill,
+              imageUrl: this.iconUrl,
+              placeholder: (context, url) => CircularProgressIndicator(),
+              errorWidget: (context, url, error) =>
+                  Icon(Icons.error, color: Theme.of(context).iconTheme.color),
+            ),
           ),
         ),
       ),

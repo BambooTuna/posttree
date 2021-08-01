@@ -18,7 +18,7 @@ import 'package:posttree/widget/user_icon.dart';
 import 'article.dart';
 
 class Home extends StatelessWidget {
-  final bool _pinned = true;
+  final bool _pinned = false;
   final bool _snap = false;
   final bool _floating = true;
 
@@ -29,13 +29,15 @@ class Home extends StatelessWidget {
       body: NestedScrollView(
         headerSliverBuilder: (context, innerBoxScrolled) => [
           SliverAppBar(
+            elevation: 0,
             pinned: _pinned,
             snap: _snap,
             floating: _floating,
+            backgroundColor: Colors.transparent,
             flexibleSpace: FlexibleSpaceBar(
               title: Text(
-                "Home",
-                style: Theme.of(context).appBarTheme.titleTextStyle,
+                "posttree",
+                style: Theme.of(context).textTheme.headline6,
               ),
               // background: FlutterLogo(),
             ),
@@ -43,7 +45,9 @@ class Home extends StatelessWidget {
             actions: [ArticleCartButton()],
           ),
         ],
-        body: HomeBody(),
+        body: SafeArea(
+          child: HomeBody(),
+        ),
       ),
       floatingActionButton: _HomeFloatingActionButton(),
     );
@@ -203,6 +207,7 @@ class _ArticleCartButtonState extends State<ArticleCartButton> {
                     Icon(
                       Icons.shopping_cart,
                       size: 28.0,
+                      color: Theme.of(context).iconTheme.color,
                     ),
                     Positioned(
                       right: 0,
@@ -235,6 +240,7 @@ class _ArticleCartButtonState extends State<ArticleCartButton> {
                 icon: Icon(
                   Icons.bookmarks,
                   size: 28.0,
+                  color: Theme.of(context).iconTheme.color,
                 ),
                 onPressed: () {
                   postCart.switchToEditMode();
@@ -282,60 +288,67 @@ class _HomeBodyState extends State<HomeBody> {
       final viewModel = watch(homeViewModelProvider);
       final authenticationViewModel = watch(authenticationViewModelProvider);
       final PostCart postCart = watch(postCartProvider);
-      return RefreshableItemTable(
-        items: viewModel.timelineItems.map((e) {
-          final card = PostCard(item: e);
-          if (postCart.editMode) {
-            final exist = postCart.exist(e);
-            return Opacity(
-              opacity: exist ? 0.5 : 1.0,
-              child: Dismissible(
-                  key: Key(e.id),
-                  direction: exist
-                      ? DismissDirection.endToStart
-                      : DismissDirection.startToEnd,
-                  onDismissed: (direction) {},
-                  confirmDismiss: (direction) async {
-                    if (direction == DismissDirection.endToStart) {
-                      postCart.del(e);
-                      ScaffoldMessenger.of(context)
-                          .showSnackBar(SnackBar(content: Text('削除しました')));
-                    } else {
-                      postCart.add(e);
-                      ScaffoldMessenger.of(context)
-                          .showSnackBar(SnackBar(content: Text('追加しました')));
-                    }
-                    return false;
-                  },
-                  background: Container(
-                    alignment: Alignment.centerLeft,
-                    color: Colors.greenAccent[200],
-                    child: Padding(
-                        padding: EdgeInsets.fromLTRB(20.0, 0.0, 0.0, 0.0),
-                        child: Icon(Icons.add, color: Colors.white)),
-                  ),
-                  secondaryBackground: Container(
-                    alignment: Alignment.centerRight,
-                    color: Colors.redAccent[200],
-                    child: Padding(
-                      padding: EdgeInsets.fromLTRB(10.0, 0.0, 20.0, 0.0),
-                      child: Icon(Icons.delete, color: Colors.white),
-                    ),
-                  ),
-                  child: card),
-            );
-          } else {
-            return card;
-          }
-        }).toList(),
-        onRefresh: () {
-          return viewModel.refreshTimeline(authenticationViewModel.selfUser);
-        },
-        lastWidget: Center(
-            child: Text(
-          "みんなの投稿が表示されるよ、下に引っ張ってリロード",
-          style: Theme.of(context).textTheme.bodyText1,
-        )),
+      return Column(
+        children: [
+          Expanded(
+            child: RefreshableItemTable(
+              items: viewModel.timelineItems.map((e) {
+                final card = PostCard(item: e);
+                if (postCart.editMode) {
+                  final exist = postCart.exist(e);
+                  return Opacity(
+                    opacity: exist ? 0.5 : 1.0,
+                    child: Dismissible(
+                        key: Key(e.id),
+                        direction: exist
+                            ? DismissDirection.endToStart
+                            : DismissDirection.startToEnd,
+                        onDismissed: (direction) {},
+                        confirmDismiss: (direction) async {
+                          if (direction == DismissDirection.endToStart) {
+                            postCart.del(e);
+                            ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(content: Text('削除しました')));
+                          } else {
+                            postCart.add(e);
+                            ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(content: Text('追加しました')));
+                          }
+                          return false;
+                        },
+                        background: Container(
+                          alignment: Alignment.centerLeft,
+                          color: Colors.greenAccent[200],
+                          child: Padding(
+                              padding: EdgeInsets.fromLTRB(20.0, 0.0, 0.0, 0.0),
+                              child: Icon(Icons.add, color: Colors.white)),
+                        ),
+                        secondaryBackground: Container(
+                          alignment: Alignment.centerRight,
+                          color: Colors.redAccent[200],
+                          child: Padding(
+                            padding: EdgeInsets.fromLTRB(10.0, 0.0, 20.0, 0.0),
+                            child: Icon(Icons.delete, color: Colors.white),
+                          ),
+                        ),
+                        child: card),
+                  );
+                } else {
+                  return card;
+                }
+              }).toList(),
+              onRefresh: () {
+                return viewModel
+                    .refreshTimeline(authenticationViewModel.selfUser);
+              },
+              lastWidget: Center(
+                  child: Text(
+                "みんなの投稿が表示されるよ、下に引っ張ってリロード",
+                style: Theme.of(context).textTheme.bodyText1,
+              )),
+            ),
+          )
+        ],
       );
     });
   }
