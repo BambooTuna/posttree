@@ -15,6 +15,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.7.1"
+  any_link_preview:
+    dependency: "direct main"
+    description:
+      name: any_link_preview
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "1.0.7"
   archive:
     dependency: transitive
     description:
@@ -293,6 +300,15 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "0.9.0"
+  flutter_link_preview:
+    dependency: "direct main"
+    description:
+      path: "."
+      ref: patch-1
+      resolved-ref: "7730a4b2c7b5b289c9c513bb87aade68ac4c64da"
+      url: "git://github.com/ZiyadF296/flutter_link_preview.git"
+    source: git
+    version: "1.5.6"
   flutter_localizations:
     dependency: transitive
     description: flutter
@@ -357,6 +373,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "0.14.2"
+  gbk2utf8:
+    dependency: transitive
+    description:
+      name: gbk2utf8
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "1.0.1"
   glob:
     dependency: transitive
     description:
@@ -616,13 +639,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.8.1"
-  simple_url_preview:
-    dependency: "direct main"
-    description:
-      name: simple_url_preview
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "3.0.1"
   sky_engine:
     dependency: transitive
     description: flutter
@@ -684,13 +700,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.1.0"
-  string_validator:
-    dependency: transitive
-    description:
-      name: string_validator
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "0.3.0"
   synchronized:
     dependency: transitive
     description:

@@ -20,7 +20,9 @@ jobs:
       - run: echo ${{ secrets.GOOGLE_SERVICE_INFO }} | base64 -d > ./ios/Runner/GoogleService-Info.plist
       - run: echo ${{ secrets.SECRET_NATIVE_ENV }} | base64 -d > ./secret/native.env
       - run: flutter pub get
-      - run: flutter build web
+
+      # TODO remove --no-sound-null-safety
+      - run: flutter build web --no-sound-null-safety
 
       - name: Archive Production Artifact
         uses: actions/upload-artifact@master
