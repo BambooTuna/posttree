@@ -1,13 +1,11 @@
 import 'package:flutter/cupertino.dart';
 
 User newUser(Map<String, dynamic> document) {
-  return User(
-      DateTime.parse(document['created_at']),
+  return User(DateTime.parse(document['created_at']),
       userId: document['user_id'],
       // document['display_name']
       userName: '匿名さん',
-      userIconImage: document['photo_url']
-  );
+      userIconImage: document['photo_url']);
 }
 
 class User {
@@ -50,5 +48,6 @@ User defaultUser() {
   return User(DateTime.now(),
       userId: "",
       userName: "",
-      userIconImage: "https://1.bp.blogspot.com/-4tNnDdIsRL4/XSGFxRFKjEI/AAAAAAABTj4/6mcXrJTACacR4w6EkFS6jXb7u2OrG6NwQCLcBGAs/s800/sagi_denwa_oldman.png");
+      userIconImage:
+          "https://1.bp.blogspot.com/-4tNnDdIsRL4/XSGFxRFKjEI/AAAAAAABTj4/6mcXrJTACacR4w6EkFS6jXb7u2OrG6NwQCLcBGAs/s800/sagi_denwa_oldman.png");
 }

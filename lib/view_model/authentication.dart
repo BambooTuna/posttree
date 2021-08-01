@@ -1,4 +1,3 @@
-
 import 'dart:async';
 import 'package:posttree/model/user.dart';
 import 'package:flutter/cupertino.dart';
@@ -7,8 +6,9 @@ import 'package:posttree/utils/event.dart';
 import 'package:posttree/utils/logger.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-final authenticationViewModelProvider = ChangeNotifierProvider((ref) => AuthenticationViewModel(
-    accountRepository: ref.read(accountRepositoryProvider)));
+final authenticationViewModelProvider = ChangeNotifierProvider((ref) =>
+    AuthenticationViewModel(
+        accountRepository: ref.read(accountRepositoryProvider)));
 
 class AuthenticationViewModel extends ChangeNotifier {
   final AccountRepository accountRepository;

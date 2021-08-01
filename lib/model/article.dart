@@ -1,15 +1,14 @@
 import 'package:posttree/model/user.dart';
 import 'package:posttree/model/post.dart';
 
-
 Article newArticle(Map<String, dynamic> document) {
-  return Article(
-      DateTime.parse(document['created_at']),
+  return Article(DateTime.parse(document['created_at']),
       id: document['article_id'],
       author: newUser(document['author']),
       title: document['title'],
-      posts: (document['posts'] as List<dynamic>).map((e) => newPost(e as Map<String, dynamic>)).toSet()
-  );
+      posts: (document['posts'] as List<dynamic>)
+          .map((e) => newPost(e as Map<String, dynamic>))
+          .toSet());
 }
 
 class Article {
@@ -19,7 +18,11 @@ class Article {
   final Set<Post> posts;
   DateTime createdAt = DateTime.now();
 
-  Article(this.createdAt, {required this.id, required this.author, required this.title, required this.posts});
+  Article(this.createdAt,
+      {required this.id,
+      required this.author,
+      required this.title,
+      required this.posts});
 
   Map<String, dynamic> toMap() {
     return {

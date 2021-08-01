@@ -7,10 +7,7 @@ import 'package:posttree/utils/event.dart';
 final accountRepositoryProvider = Provider((ref) => AccountRepositoryImpl(
     authenticationProvider: ref.read(authenticationProvider)));
 
-enum AuthProvider {
-  Google,
-  Twitter
-}
+enum AuthProvider { Google, Twitter }
 
 abstract class AccountRepository {
   Stream<Event> get authState;
@@ -53,7 +50,7 @@ class AccountRepositoryImpl implements AccountRepository {
         userIconImage: currentUser.photoURL ??
             "https://pbs.twimg.com/profile_images/1138564670325792769/lN3Ggmem_400x400.jpg");
     final userDoc =
-    await firestore.collection("users").doc(currentUser.uid).get();
+        await firestore.collection("users").doc(currentUser.uid).get();
     if (!userDoc.exists) {
       await userDoc.reference.set(user.toMap());
     }
@@ -101,8 +98,7 @@ class AccountRepositoryImpl implements AccountRepository {
 
   @override
   Future<User> findUserById(String userId) async {
-    final userDoc =
-        await firestore.collection("users").doc(userId).get();
+    final userDoc = await firestore.collection("users").doc(userId).get();
     var document = userDoc.data() as Map<String, dynamic>;
     return newUser(document);
   }

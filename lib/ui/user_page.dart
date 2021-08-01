@@ -119,13 +119,13 @@ class _UserPageBodyState extends State<UserPageBody> {
             child: TabBarWidget(tabs: [
           Tab(
             icon: Icon(
-              Icons.paste,
+              Icons.edit,
               color: Theme.of(context).iconTheme.color,
             ),
           ),
           Tab(
             icon: Icon(
-              Icons.edit,
+              Icons.bookmarks,
               color: Theme.of(context).iconTheme.color,
             ),
           )

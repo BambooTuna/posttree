@@ -44,21 +44,21 @@ class ArticleCard extends StatelessWidget {
                   userIcon,
                   Expanded(
                       child: Padding(
-                        padding: EdgeInsets.all(12),
-                        child: Column(
-                          mainAxisSize: MainAxisSize.max,
-                          children: <Widget>[
-                            Row(
-                              children: [
-                                Text(
-                                  item.title,
-                                  style: Theme.of(context).textTheme.headline6,
-                                ),
-                              ],
+                    padding: EdgeInsets.all(12),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.max,
+                      children: <Widget>[
+                        Row(
+                          children: [
+                            Text(
+                              item.title,
+                              style: Theme.of(context).textTheme.headline6,
                             ),
                           ],
                         ),
-                      )),
+                      ],
+                    ),
+                  )),
                 ]),
           ),
         ),

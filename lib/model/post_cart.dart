@@ -10,7 +10,7 @@ import 'article.dart';
 
 final postCartProvider = ChangeNotifierProvider(
   (ref) => PostCart(
-      homeViewModel: ref.read(homeViewModelProvider),
+    homeViewModel: ref.read(homeViewModelProvider),
   ),
 );
 
@@ -54,7 +54,8 @@ class PostCart extends ChangeNotifier {
       return;
     }
     if (this._items.isNotEmpty) {
-      final article = await homeViewModel.summarize(user, title, {...this._items});
+      final article =
+          await homeViewModel.summarize(user, title, {...this._items});
       _createArticleAction.sink.add(article);
     }
     this._editMode = false;

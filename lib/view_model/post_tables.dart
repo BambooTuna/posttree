@@ -21,7 +21,8 @@ abstract class PostTableViewModel extends ChangeNotifier {
 }
 
 final userPostTableViewModelProvider = ChangeNotifierProvider(
-      (ref) => UserPostTableViewModel(postRepository: ref.read(postRepositoryProvider)),
+  (ref) =>
+      UserPostTableViewModel(postRepository: ref.read(postRepositoryProvider)),
 );
 
 class UserPostTableViewModel extends PostTableViewModel {
@@ -37,9 +38,8 @@ class UserPostTableViewModel extends PostTableViewModel {
 }
 
 final articleTableViewModelProvider = ChangeNotifierProvider(
-      (ref) => ArticleTableViewModel(
-      articleRepository: ref.read(articleRepositoryProvider)
-  ),
+  (ref) => ArticleTableViewModel(
+      articleRepository: ref.read(articleRepositoryProvider)),
 );
 
 class ArticleTableViewModel extends ChangeNotifier {

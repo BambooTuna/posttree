@@ -13,9 +13,8 @@ import 'package:posttree/utils/random.dart';
 
 final homeViewModelProvider = ChangeNotifierProvider(
   (ref) => HomeViewModel(
-    postRepository: ref.read(postRepositoryProvider),
-    articleRepository: ref.read(articleRepositoryProvider)
-  ),
+      postRepository: ref.read(postRepositoryProvider),
+      articleRepository: ref.read(articleRepositoryProvider)),
 );
 
 class HomeViewModel extends ChangeNotifier {
@@ -39,9 +38,7 @@ class HomeViewModel extends ChangeNotifier {
     try {
       if (user != null) {
         await postRepository.insert(Post(DateTime.now(),
-            id: randomString(10),
-            message: message,
-            user: user));
+            id: randomString(10), message: message, user: user));
       }
       _voidEventAction.sink.add(EventSuccess());
     } catch (e) {
@@ -53,13 +50,8 @@ class HomeViewModel extends ChangeNotifier {
   }
 
   Future<Article> summarize(User? user, String title, Set<Post> posts) async {
-    final article = Article(
-        DateTime.now(),
-        id: randomString(10),
-        author: user!,
-        title: title,
-        posts: posts
-    );
+    final article = Article(DateTime.now(),
+        id: randomString(10), author: user!, title: title, posts: posts);
     await articleRepository.insert(article);
     return article;
   }

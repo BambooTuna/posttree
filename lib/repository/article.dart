@@ -6,7 +6,8 @@ import 'package:posttree/model/post.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:posttree/model/user.dart';
 
-final articleRepositoryProvider = Provider((ref) => ArticleRepositoryFirestoreImpl());
+final articleRepositoryProvider =
+    Provider((ref) => ArticleRepositoryFirestoreImpl());
 
 abstract class ArticleRepository {
   Future<Article> findById(String id);
@@ -14,7 +15,6 @@ abstract class ArticleRepository {
 
   Future<void> insert(Article record);
 }
-
 
 class ArticleRepositoryFirestoreImpl implements ArticleRepository {
   FirebaseFirestore firestore = FirebaseFirestore.instance;
@@ -43,5 +43,4 @@ class ArticleRepositoryFirestoreImpl implements ArticleRepository {
     CollectionReference articles = firestore.collection('articles');
     await articles.add(record.toMap());
   }
-
 }

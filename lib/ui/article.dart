@@ -4,7 +4,6 @@ import 'package:posttree/model/article.dart';
 import 'package:posttree/widget/post_card.dart';
 import 'package:posttree/widget/refreshable_post_table.dart';
 
-
 class ArticleScreenArguments {
   final String articleId;
   ArticleScreenArguments(this.articleId);

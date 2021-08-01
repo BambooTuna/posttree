@@ -1,9 +1,7 @@
 import 'package:posttree/model/user.dart';
 
-
 Post newPost(Map<String, dynamic> document) {
-  return Post(
-      DateTime.parse(document['created_at']),
+  return Post(DateTime.parse(document['created_at']),
       id: document['post_id'],
       user: newUser(document['author']),
       message: document['content']);
@@ -15,9 +13,7 @@ class Post {
   final String message;
   DateTime createdAt = DateTime.now();
   Post(this.createdAt,
-      {required this.id,
-      required this.user,
-      required this.message});
+      {required this.id, required this.user, required this.message});
 
   Map<String, dynamic> toMap() {
     return {
@@ -44,7 +40,7 @@ class Post {
   int get hashCode => super.hashCode;
 }
 
-Post emptyPost (String id) {
+Post emptyPost(String id) {
   return Post(
     DateTime.now(),
     id: id,

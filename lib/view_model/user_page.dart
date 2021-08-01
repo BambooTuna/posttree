@@ -6,7 +6,8 @@ import 'package:posttree/utils/event.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 final userPageViewModelProvider = ChangeNotifierProvider(
-      (ref) => UserPageViewModel(accountRepository: ref.read(accountRepositoryProvider)),
+  (ref) =>
+      UserPageViewModel(accountRepository: ref.read(accountRepositoryProvider)),
 );
 
 class UserPageViewModel extends ChangeNotifier {

@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -17,18 +18,33 @@ import 'package:posttree/widget/user_icon.dart';
 import 'article.dart';
 
 class Home extends StatelessWidget {
+  final bool _pinned = true;
+  final bool _snap = false;
+  final bool _floating = true;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       resizeToAvoidBottomInset: true,
-      appBar: AppBar(
-        title: Text(
-          "Home",
-          style: Theme.of(context).appBarTheme.titleTextStyle,
-        ),
-        leading: UserSmallIcon(),
+      body: NestedScrollView(
+        headerSliverBuilder: (context, innerBoxScrolled) => [
+          SliverAppBar(
+            pinned: _pinned,
+            snap: _snap,
+            floating: _floating,
+            flexibleSpace: FlexibleSpaceBar(
+              title: Text(
+                "Home",
+                style: Theme.of(context).appBarTheme.titleTextStyle,
+              ),
+              // background: FlutterLogo(),
+            ),
+            leading: UserSmallIcon(),
+            actions: [ArticleCartButton()],
+          ),
+        ],
+        body: HomeBody(),
       ),
-      body: HomeBody(),
       floatingActionButton: _HomeFloatingActionButton(),
     );
   }
@@ -51,18 +67,22 @@ class _UserSmallIconState extends State<UserSmallIcon> {
       final authenticationViewModel = watch(authenticationViewModelProvider);
       if (authenticationViewModel.isLogin) {
         final iconUrl = authenticationViewModel.selfUser!.userIconImage;
-        return UserIconWidget(
-          iconSize: 48.0,
-          radius: 20,
-          onTap: () {
-            Navigator.of(context).pushNamed("/profile",
-                arguments: UserPageArguments(authenticationViewModel.selfUser!.userId));
-          },
-          iconUrl: iconUrl,
+        return Padding(
+          padding: EdgeInsets.all(5),
+          child: UserIconWidget(
+            iconSize: 48.0,
+            radius: 20,
+            onTap: () {
+              Navigator.of(context).pushNamed("/profile",
+                  arguments: UserPageArguments(
+                      authenticationViewModel.selfUser!.userId));
+            },
+            iconUrl: iconUrl,
+          ),
         );
       } else {
         return IconButton(
-          padding: new EdgeInsets.all(0.0),
+          padding: EdgeInsets.all(5),
           icon: Icon(Icons.account_circle, size: 48.0),
           onPressed: () {
             Navigator.of(context).pushNamed("/login");
@@ -79,7 +99,8 @@ class _HomeFloatingActionButton extends StatelessWidget {
     return Consumer(builder: (context, watch, child) {
       return FloatingActionButton(
         onPressed: () {
-          final authenticationViewModel = watch(authenticationViewModelProvider);
+          final authenticationViewModel =
+              watch(authenticationViewModelProvider);
           if (authenticationViewModel.isLogin) {
             openPostFormModal(context);
           } else {
@@ -94,6 +115,131 @@ class _HomeFloatingActionButton extends StatelessWidget {
         },
         tooltip: 'Increment',
         child: Icon(Icons.edit),
+      );
+    });
+  }
+}
+
+class ArticleCartButton extends StatefulWidget {
+  @override
+  _ArticleCartButtonState createState() => _ArticleCartButtonState();
+}
+
+class _ArticleCartButtonState extends State<ArticleCartButton> {
+  _onPressSummarize(
+      PostCart postCart, AuthenticationViewModel authenticationViewModel) {
+    if (!postCart.editMode) {
+      postCart.switchToEditMode();
+    } else {
+      if (postCart.count == 0) {
+        postCart.summarize(authenticationViewModel.selfUser, "");
+        return;
+      }
+      showDialog(
+          context: context,
+          builder: (context) {
+            final _formKey = GlobalKey<FormBuilderState>();
+            return AlertDialog(
+              title: Text('タイトル'),
+              content: SizedBox(
+                height: 100,
+                child: FormBuilder(
+                  key: _formKey,
+                  autovalidateMode: AutovalidateMode.always,
+                  child: Column(children: <Widget>[
+                    FormBuilderTextField(
+                      name: "title",
+                      autofocus: true,
+                      validator: FormBuilderValidators.compose([
+                        FormBuilderValidators.required(context),
+                        FormBuilderValidators.maxLength(context, 30),
+                      ]),
+                      keyboardType: TextInputType.text,
+                      style: Theme.of(context).textTheme.subtitle1,
+                    ),
+                  ]),
+                ),
+              ),
+              actions: <Widget>[
+                TextButton(
+                  child: Text('キャンセル'),
+                  onPressed: () {
+                    Navigator.pop(context);
+                  },
+                ),
+                TextButton(
+                  child: Text('作成'),
+                  onPressed: () {
+                    if (_formKey.currentState!.saveAndValidate()) {
+                      Navigator.pop(context);
+                      postCart.summarize(authenticationViewModel.selfUser,
+                          _formKey.currentState!.value['title']);
+                    }
+                    //OKを押したあとの処理
+                  },
+                ),
+              ],
+            );
+          });
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Consumer(builder: (context, watch, child) {
+      final authenticationViewModel = watch(authenticationViewModelProvider);
+      final postCart = watch(postCartProvider);
+      return Padding(
+        padding: EdgeInsets.all(5),
+        child: postCart.editMode
+            ? IconButton(
+                icon: Stack(
+                  children: [
+                    Icon(
+                      Icons.shopping_cart,
+                      size: 28.0,
+                    ),
+                    Positioned(
+                      right: 0,
+                      child: Container(
+                        padding: EdgeInsets.all(1),
+                        decoration: BoxDecoration(
+                          color: Colors.redAccent[200],
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        constraints: BoxConstraints(
+                          minWidth: 16,
+                          minHeight: 16,
+                        ),
+                        child: Text(
+                          "${postCart.count}",
+                          style: TextStyle(
+                            fontSize: 12,
+                          ),
+                          textAlign: TextAlign.center,
+                        ),
+                      ),
+                    )
+                  ],
+                ),
+                onPressed: () {
+                  _onPressSummarize(postCart, authenticationViewModel);
+                },
+              )
+            : IconButton(
+                icon: Icon(
+                  Icons.bookmarks,
+                  size: 28.0,
+                ),
+                onPressed: () {
+                  postCart.switchToEditMode();
+                },
+              ),
       );
     });
   }
@@ -135,136 +281,61 @@ class _HomeBodyState extends State<HomeBody> {
     return Consumer(builder: (context, watch, child) {
       final viewModel = watch(homeViewModelProvider);
       final authenticationViewModel = watch(authenticationViewModelProvider);
-      final postCart = watch(postCartProvider);
-      return Column(
-        children: [
-          Padding(
-            padding: EdgeInsets.all(5),
-            child: SizedBox(
-              width: double.infinity,
-              child: OutlinedButton(
-                child: Text(postCart.editMode
-                    ? "まとめるモード (${postCart.count})"
-                    : "通常モード"),
-                style: OutlinedButton.styleFrom(
-                  primary: Colors.black,
-                  shape: const StadiumBorder(),
-                  side: BorderSide(
-                      color:
-                          postCart.editMode ? Colors.redAccent : Colors.green),
-                ),
-                onPressed: () {
-                  if (!postCart.editMode) {
-                    postCart.switchToEditMode();
-                  } else {
-                    showDialog(
-                        context: context,
-                        builder: (context) {
-                          final _formKey = GlobalKey<FormBuilderState>();
-                          return AlertDialog(
-                            title: Text('タイトル'),
-                            content: SizedBox(
-                              height: 100,
-                              child: FormBuilder(
-                                key: _formKey,
-                                autovalidateMode: AutovalidateMode.always,
-                                child: Column(children: <Widget>[
-                                  FormBuilderTextField(
-                                    name: "title",
-                                    autofocus: true,
-                                    validator: FormBuilderValidators.compose([
-                                      FormBuilderValidators.required(context),
-                                      FormBuilderValidators.maxLength(context, 30),
-                                    ]),
-                                    keyboardType: TextInputType.text,
-                                    style: Theme.of(context).textTheme.subtitle1,
-                                  ),
-                                ]),
-                              ),
-                            ),
-                            actions: <Widget>[
-                              TextButton(
-                                child: Text('キャンセル'),
-                                onPressed: () {
-                                  Navigator.pop(context);
-                                },
-                              ),
-                              TextButton(
-                                child: Text('作成'),
-                                onPressed: () {
-                                  if (_formKey.currentState!.saveAndValidate()) {
-                                    Navigator.pop(context);
-                                    postCart.summarize(authenticationViewModel.selfUser, _formKey.currentState!.value['title']);
-                                  }
-                                  //OKを押したあとの処理
-                                },
-                              ),
-                            ],
-                          );
-                        });
-                  }
-                },
-              ),
-            ),
-          ),
-          Expanded(
-            child: RefreshableItemTable(
-              items: viewModel.timelineItems.map((e) {
-                final card = PostCard(item: e);
-                if (postCart.editMode) {
-                  final exist = postCart.exist(e);
-                  return Opacity(
-                    opacity: exist ? 0.5 : 1.0,
-                    child: Dismissible(
-                        key: Key(e.id),
-                        direction: exist
-                            ? DismissDirection.endToStart
-                            : DismissDirection.startToEnd,
-                        onDismissed: (direction) {},
-                        confirmDismiss: (direction) async {
-                          if (direction == DismissDirection.endToStart) {
-                            postCart.del(e);
-                            ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(content: Text('削除しました')));
-                          } else {
-                            postCart.add(e);
-                            ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(content: Text('追加しました')));
-                          }
-                          return false;
-                        },
-                        background: Container(
-                          alignment: Alignment.centerLeft,
-                          color: Colors.greenAccent[200],
-                          child: Padding(
-                              padding: EdgeInsets.fromLTRB(20.0, 0.0, 0.0, 0.0),
-                              child: Icon(Icons.add, color: Colors.white)),
-                        ),
-                        secondaryBackground: Container(
-                          alignment: Alignment.centerRight,
-                          color: Colors.redAccent[200],
-                          child: Padding(
-                            padding: EdgeInsets.fromLTRB(10.0, 0.0, 20.0, 0.0),
-                            child: Icon(Icons.delete, color: Colors.white),
-                          ),
-                        ),
-                        child: card),
-                  );
-                } else {
-                  return card;
-                }
-              }).toList(),
-              onRefresh: () {
-                return viewModel.refreshTimeline(authenticationViewModel.selfUser);
-              },
-              lastWidget: Center(
-                  child: Text(
-                "みんなの投稿が表示されるよ、下に引っ張ってリロード",
-                style: Theme.of(context).textTheme.bodyText1,
-              )),
-            ),
-          ),
-        ],
+      final PostCart postCart = watch(postCartProvider);
+      return RefreshableItemTable(
+        items: viewModel.timelineItems.map((e) {
+          final card = PostCard(item: e);
+          if (postCart.editMode) {
+            final exist = postCart.exist(e);
+            return Opacity(
+              opacity: exist ? 0.5 : 1.0,
+              child: Dismissible(
+                  key: Key(e.id),
+                  direction: exist
+                      ? DismissDirection.endToStart
+                      : DismissDirection.startToEnd,
+                  onDismissed: (direction) {},
+                  confirmDismiss: (direction) async {
+                    if (direction == DismissDirection.endToStart) {
+                      postCart.del(e);
+                      ScaffoldMessenger.of(context)
+                          .showSnackBar(SnackBar(content: Text('削除しました')));
+                    } else {
+                      postCart.add(e);
+                      ScaffoldMessenger.of(context)
+                          .showSnackBar(SnackBar(content: Text('追加しました')));
+                    }
+                    return false;
+                  },
+                  background: Container(
+                    alignment: Alignment.centerLeft,
+                    color: Colors.greenAccent[200],
+                    child: Padding(
+                        padding: EdgeInsets.fromLTRB(20.0, 0.0, 0.0, 0.0),
+                        child: Icon(Icons.add, color: Colors.white)),
+                  ),
+                  secondaryBackground: Container(
+                    alignment: Alignment.centerRight,
+                    color: Colors.redAccent[200],
+                    child: Padding(
+                      padding: EdgeInsets.fromLTRB(10.0, 0.0, 20.0, 0.0),
+                      child: Icon(Icons.delete, color: Colors.white),
+                    ),
+                  ),
+                  child: card),
+            );
+          } else {
+            return card;
+          }
+        }).toList(),
+        onRefresh: () {
+          return viewModel.refreshTimeline(authenticationViewModel.selfUser);
+        },
+        lastWidget: Center(
+            child: Text(
+          "みんなの投稿が表示されるよ、下に引っ張ってリロード",
+          style: Theme.of(context).textTheme.bodyText1,
+        )),
       );
     });
   }
